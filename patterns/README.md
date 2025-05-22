@@ -1,61 +1,63 @@
 # Camunda 7 to Camunda 8 Code Conversion Pattern Catalog
 
+This catalog contains specific patterns on how to translate Camunda 7 code to Camunda 8. This patterns do not cover changes to the BPMN XML.
+
+These patterns are programming-language-specific. For language-agnostic information about the Camunda 7 and Camunda 8 API endpoints, see the **[Camunda 7 API to Camunda 8 API Mapping Table](https://camunda-community-hub.github.io/camunda-7-to-8-code-conversion/)**.
+
 > [!NOTE]  
 > The pattern catalog was just kicked off and will be filled with more patterns throughout Q2 of 2025. The current patterns are more exemplary to discuss the structure. Feedback of course welcome.
 
-## Introduction
 
-This catalog contains code conversion patterns for **client code** and **glue code** for **Java (Spring)**-based code:
+<!-- The following content is automatically added with a Github Action from generate-catalog.js -->
+<!-- BEGIN-CATALOG -->
 
--   **Client code**: Whenever your solutions calls the Camunda API, e.g., to start new process instances.
--   **Glue code**: Whenever you define code that is executed when a process arrives at a specific state in the process, specifically JavaDelegates and external task workers.
+## Client code
 
-These patterns are language-specific. For language-agnostic information about the Camunda 7 and Camunda 8 API endpoints, see the **[Camunda 7 API to Camunda 8 API Mapping WebApp (WIP)](https://camunda-community-hub.github.io/camunda-7-to-8-code-conversion/)**.
+Whenever your solutions calls the Camunda API, e.g., to start new process instances.
 
-## Client Code
 
-In **Camunda 7**, the communication with the Camunda engine is structured into several **services**:
+### `ProcessEngine`
 
--   RepositoryService: Manages Deployments
--   RuntimeService: For starting and searching ProcessInstances
--   TaskService: Exposes operations to manage human (standalone) Tasks, such as claiming, completing and assigning tasks
--   IdentityService: Used for managing Users, Groups and the relations between them
--   ManagementService: Exposes engine admin and maintenance operations, which have no relation to the runtime execution of business processes
--   HistoryService: Exposes information about ongoing and past process instances.
--   FormService: Access to form data and rendered forms for starting new process instances and completing tasks.
+The ProcessEngine offers various services (think RuntimeService) to interact with the Camunda 7 engine.
 
-This project focuses on the **RepositoryService**, **RuntimeService** and **TaskService**.
+Patterns:
 
-With the release of **Camunda 8.8**, the Camunda API is harmonized to make communication with Camunda 8 clusters simpler. Thus, a new client SDK is released as well: **Camunda Spring SDK**, see the [latest release in maven central](https://mvnrepository.com/artifact/io.camunda/spring-boot-starter-camunda-sdk).
+- [Broadcast Signals](patterns/client-code/process_engine/broadcast-signals.md)
+- [Cancel Process Instance](patterns/client-code/process_engine/cancel-process-instance.md)
+- [Correlate Messages](patterns/client-code/process_engine/correlate-messages.md)
+- [Handle Variables](patterns/client-code/process_engine/handle-process-variables.md)
+- [Handle Resources](patterns/client-code/process_engine/handle-resources.md)
+- [handle user tasks](patterns/client-code/process_engine/handle-user-tasks.md)
+- [Raise Incidents](patterns/client-code/process_engine/raise-incidents.md)
+- [Search Process Definitions](patterns/client-code/process_engine/search-process-definitions.md)
+- [Starting Process Instances](patterns/client-code/process_engine/starting-process-instances.md)
 
-## Glue Code
+## Glue code
 
-In **Camunda 7**, code executed by a service task or listener can be organized in various ways. A common method is using a **JavaDelegate** for a spring-integrated engine, for which a bean implementing the JavaDelegate interface is referenced via an expression in the BPMN xml. Another method, that is closer to the architecture enforced in Camunda 8, is the **external task worker pattern**.
+Whenever you define code that is executed when a process arrives at a specific state in the process, specifically JavaDelegates and external task workers.
 
-With the enforced remote engine architecture in **Camunda 8**, only the **external task worker pattern** can be used, utilizing so-called **job workers**.
 
-## Remarks
+### JavaDelegate (Spring) &#8594; Job Worker (Spring)
 
-The code conversion patterns describe the necessary changes to convert a Camunda 7 code base to Camunda 8. Changes to the BPMN XML are covered by different tooling.
+In Camunda 7, JavaDelegates are a common way to implement glue code. Very often, JavaDelegates are Spring beans and referenced via Expression language in the BPMN xml.
 
-### Handling Process Variables
+Patterns:
 
-Handling of process variables in Camunda 7 is a complex topic. The engine supports various value types: primitive types like boolean, bytes, integer and string; file; object; and json and xml representations. The client code and glue code can specify how the variables are stored in the engine database. Camunda 7 offers two approaches to handle process variables: the [Java Object API](https://docs.camunda.org/manual/latest/user-guide/process-engine/variables/#java-object-api), and the [Typed Value API](https://docs.camunda.org/manual/latest/user-guide/process-engine/variables/#typed-value-api). Both approaches can be used at the same time.
+- [Handling a BPMN error](patterns/glue-code/java-spring-delegate/handling-a-bpmn-error.md)
+- [Handling a Failure](patterns/glue-code/java-spring-delegate/handling-a-failure.md)
+- [Handling an Incident](patterns/glue-code/java-spring-delegate/handling-an-incident.md)
+- [Handling Process Variables](patterns/glue-code/java-spring-delegate/handling-process-variables.md)
 
-In Camunda 8, all common value types are stored in JSON representation. This simplifies various aspects about handling process variables in client code and glue code.
+### External Task Worker (Spring) &#8594; Job Worker (Spring)
 
-The code conversion examples cover both Camunda 7 approaches to handle process variables. Naturally, both approaches are converted into the simplified JSON representation approach in Camunda 8.
+In Camunda 7, external task workers are a way to implement glue code. They are deployed independently from the engine. Thus, they cannot access the engine's services.
 
-## Project-level Changes
+Patterns:
 
-As part of the code migration, remove all Camunda 7 dependencies. Import the **Camunda Spring SDK**:
+- [Handling a BPMN error](patterns/glue-code/java-spring-external-task-worker/handling-a-bpmn-error.md)
+- [Handling a Failure](patterns/glue-code/java-spring-external-task-worker/handling-a-failure.md)
+- [Handling an Incident](patterns/glue-code/java-spring-external-task-worker/handling-an-incident.md)
+- [Handling Process Variables](patterns/glue-code/java-spring-external-task-worker/handling-process-variables.md)
 
-```
-<dependency>
-	<groupId>io.camunda</groupId>
-	<artifactId>spring-boot-starter-camunda-sdk</artifactId>
-	<version>{version}</version>
-</dependency>
-```
+<!-- END-CATALOG -->
 
-Also, configure your the connection to the Camunda 8 cluster in the application.properties or application.yaml
