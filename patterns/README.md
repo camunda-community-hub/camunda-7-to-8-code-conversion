@@ -11,6 +11,15 @@ These patterns are programming-language-specific. For language-agnostic informat
 <!-- The following content is automatically added with a Github Action from generate-catalog.js -->
 <!-- BEGIN-CATALOG -->
 
+## General thoughts and changes
+
+Some changes need to happen on a project-wide level.
+
+Patterns:
+
+- [Maven dependency and configuration](10-general/dependencies.md)
+- [process variables](10-general/process-variables.md)
+
 ## Client code
 
 Whenever your solutions calls the Camunda API, e.g., to start new process instances.
@@ -22,25 +31,16 @@ The ProcessEngine offers various services (think RuntimeService) to interact wit
 
 Patterns:
 
-- [Class-level Changes](client-code/process_engine/adjusting-the-java-class.md)
-- [Broadcast Signals](client-code/process_engine/broadcast-signals.md)
-- [Cancel Process Instance](client-code/process_engine/cancel-process-instance.md)
-- [Correlate Messages](client-code/process_engine/correlate-messages.md)
-- [Handle Variables](client-code/process_engine/handle-process-variables.md)
-- [Handle Resources](client-code/process_engine/handle-resources.md)
-- [handle user tasks](client-code/process_engine/handle-user-tasks.md)
-- [Raise Incidents](client-code/process_engine/raise-incidents.md)
-- [Search Process Definitions](client-code/process_engine/search-process-definitions.md)
-- [Starting Process Instances](client-code/process_engine/starting-process-instances.md)
-
-## General thoughts and changes
-
-Some changes need to happen on a project-wide level.
-
-Patterns:
-
-- [Maven dependency and configuration](general/dependencies.md)
-- [process variables](general/process-variables.md)
+- [Class-level Changes](20-client-code/process_engine/adjusting-the-java-class.md)
+- [Broadcast Signals](20-client-code/process_engine/broadcast-signals.md)
+- [Cancel Process Instance](20-client-code/process_engine/cancel-process-instance.md)
+- [Correlate Messages](20-client-code/process_engine/correlate-messages.md)
+- [Handle Variables](20-client-code/process_engine/handle-process-variables.md)
+- [Handle Resources](20-client-code/process_engine/handle-resources.md)
+- [handle user tasks](20-client-code/process_engine/handle-user-tasks.md)
+- [Raise Incidents](20-client-code/process_engine/raise-incidents.md)
+- [Search Process Definitions](20-client-code/process_engine/search-process-definitions.md)
+- [Starting Process Instances](20-client-code/process_engine/starting-process-instances.md)
 
 ## Glue code
 
@@ -53,11 +53,11 @@ In Camunda 7, JavaDelegates are a common way to implement glue code. Very often,
 
 Patterns:
 
-- [adjusting the java class](glue-code/java-spring-delegate/adjusting-the-java-class.md)
-- [Handling a BPMN error](glue-code/java-spring-delegate/handling-a-bpmn-error.md)
-- [Handling a Failure](glue-code/java-spring-delegate/handling-a-failure.md)
-- [Handling an Incident](glue-code/java-spring-delegate/handling-an-incident.md)
-- [Handling Process Variables](glue-code/java-spring-delegate/handling-process-variables.md)
+- [adjusting the java class](30-glue-code/java-spring-delegate/adjusting-the-java-class.md)
+- [Handling a BPMN error](30-glue-code/java-spring-delegate/handling-a-bpmn-error.md)
+- [Handling a Failure](30-glue-code/java-spring-delegate/handling-a-failure.md)
+- [Handling an Incident](30-glue-code/java-spring-delegate/handling-an-incident.md)
+- [Handling Process Variables](30-glue-code/java-spring-delegate/handling-process-variables.md)
 
 ### External Task Worker (Spring) &#8594; Job Worker (Spring)
 
@@ -65,11 +65,11 @@ In Camunda 7, external task workers are a way to implement glue code. They are d
 
 Patterns:
 
-- [Class-level Changes](glue-code/java-spring-external-task-worker/adjusting-the-java-class.md)
-- [Handling a BPMN error](glue-code/java-spring-external-task-worker/handling-a-bpmn-error.md)
-- [Handling a Failure](glue-code/java-spring-external-task-worker/handling-a-failure.md)
-- [Handling an Incident](glue-code/java-spring-external-task-worker/handling-an-incident.md)
-- [Handling Process Variables](glue-code/java-spring-external-task-worker/handling-process-variables.md)
+- [Class-level Changes](30-glue-code/java-spring-external-task-worker/adjusting-the-java-class.md)
+- [Handling a BPMN error](30-glue-code/java-spring-external-task-worker/handling-a-bpmn-error.md)
+- [Handling a Failure](30-glue-code/java-spring-external-task-worker/handling-a-failure.md)
+- [Handling an Incident](30-glue-code/java-spring-external-task-worker/handling-an-incident.md)
+- [Handling Process Variables](30-glue-code/java-spring-external-task-worker/handling-process-variables.md)
 
 <!-- END-CATALOG -->
 

@@ -5,7 +5,7 @@ const PATTERN_ROOT = './';
 const OUTPUT_FILE = 'PATTERN_CATALOG.md';
 const PATTERN_ROOT_README = './README.md';
 
-const IGNORED_FOLDERS = new Set(['camunda_7_code_examples', 'camunda_8_code_examples']);
+const IGNORED_FOLDERS = new Set(['code-examples']);
 
 
 // Read README.md from a folder if available
@@ -29,6 +29,10 @@ function extractIntro(content) {
     if (!line.startsWith('#')) return line.trim();
   }
   return '';
+}
+
+function stripPrefix(name) {
+  return name.replace(/^\d+[_-]/, '').replace(/\.md$/, '').replace(/[-_]/g, ' ');
 }
 
 // Extract the first heading from a markdown file
@@ -55,7 +59,7 @@ function buildCatalog(dir, depth = 1) {
   const { title: readmeTitle, intro: folderIntro } = getFolderReadme(dir);
   
   if (!isTopLevel) {
-    const sectionTitle = readmeTitle || path.basename(dir);
+    const sectionTitle = readmeTitle || stripPrefix(path.basename(dir));
     const heading = `${'#'.repeat(depth)} ${sectionTitle}`;
 
     output += `\n${heading}\n\n`;
@@ -68,7 +72,7 @@ function buildCatalog(dir, depth = 1) {
   for (const file of files) {
     const filePath = path.join(dir, file.name);
     const content = fs.readFileSync(filePath, 'utf-8');
-    const title = extractTitle(content, file.name);
+    const title = extractTitle(content, stripPrefix(file.name));
     const relativePath = filePath.replace(/^\.\/|\\/g, '/');
     output += `- [${title}](${relativePath})\n`;
   }
