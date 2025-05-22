@@ -18,7 +18,7 @@ Some changes need to happen on a project-wide level.
 Patterns:
 
 - [Maven dependency and configuration](10-general/dependencies.md)
-- [process variables](10-general/process-variables.md)
+- [Handling Process Variables](10-general/process-variables.md)
 
 ## Client code
 
