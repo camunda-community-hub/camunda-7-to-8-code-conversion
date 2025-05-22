@@ -19,11 +19,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies (if any)
+      - name: Install dependencies
+        working-directory: patterns
         run: npm install
 
       - name: Run catalog generator
-        run: node patterns/generate-catalog.js
+        working-directory: patterns
+        run: node generate-catalog.js
 
       - name: Check for changes
         run: |
