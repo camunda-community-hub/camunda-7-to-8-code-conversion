@@ -22,15 +22,25 @@ The ProcessEngine offers various services (think RuntimeService) to interact wit
 
 Patterns:
 
-- [Broadcast Signals](patterns/client-code/process_engine/broadcast-signals.md)
-- [Cancel Process Instance](patterns/client-code/process_engine/cancel-process-instance.md)
-- [Correlate Messages](patterns/client-code/process_engine/correlate-messages.md)
-- [Handle Variables](patterns/client-code/process_engine/handle-process-variables.md)
-- [Handle Resources](patterns/client-code/process_engine/handle-resources.md)
-- [handle user tasks](patterns/client-code/process_engine/handle-user-tasks.md)
-- [Raise Incidents](patterns/client-code/process_engine/raise-incidents.md)
-- [Search Process Definitions](patterns/client-code/process_engine/search-process-definitions.md)
-- [Starting Process Instances](patterns/client-code/process_engine/starting-process-instances.md)
+- [Class-level Changes](client-code/process_engine/adjusting-the-java-class.md)
+- [Broadcast Signals](client-code/process_engine/broadcast-signals.md)
+- [Cancel Process Instance](client-code/process_engine/cancel-process-instance.md)
+- [Correlate Messages](client-code/process_engine/correlate-messages.md)
+- [Handle Variables](client-code/process_engine/handle-process-variables.md)
+- [Handle Resources](client-code/process_engine/handle-resources.md)
+- [handle user tasks](client-code/process_engine/handle-user-tasks.md)
+- [Raise Incidents](client-code/process_engine/raise-incidents.md)
+- [Search Process Definitions](client-code/process_engine/search-process-definitions.md)
+- [Starting Process Instances](client-code/process_engine/starting-process-instances.md)
+
+## General thoughts and changes
+
+Some changes need to happen on a project-wide level.
+
+Patterns:
+
+- [Maven dependency and configuration](general/dependencies.md)
+- [process variables](general/process-variables.md)
 
 ## Glue code
 
@@ -43,10 +53,11 @@ In Camunda 7, JavaDelegates are a common way to implement glue code. Very often,
 
 Patterns:
 
-- [Handling a BPMN error](patterns/glue-code/java-spring-delegate/handling-a-bpmn-error.md)
-- [Handling a Failure](patterns/glue-code/java-spring-delegate/handling-a-failure.md)
-- [Handling an Incident](patterns/glue-code/java-spring-delegate/handling-an-incident.md)
-- [Handling Process Variables](patterns/glue-code/java-spring-delegate/handling-process-variables.md)
+- [adjusting the java class](glue-code/java-spring-delegate/adjusting-the-java-class.md)
+- [Handling a BPMN error](glue-code/java-spring-delegate/handling-a-bpmn-error.md)
+- [Handling a Failure](glue-code/java-spring-delegate/handling-a-failure.md)
+- [Handling an Incident](glue-code/java-spring-delegate/handling-an-incident.md)
+- [Handling Process Variables](glue-code/java-spring-delegate/handling-process-variables.md)
 
 ### External Task Worker (Spring) &#8594; Job Worker (Spring)
 
@@ -54,10 +65,11 @@ In Camunda 7, external task workers are a way to implement glue code. They are d
 
 Patterns:
 
-- [Handling a BPMN error](patterns/glue-code/java-spring-external-task-worker/handling-a-bpmn-error.md)
-- [Handling a Failure](patterns/glue-code/java-spring-external-task-worker/handling-a-failure.md)
-- [Handling an Incident](patterns/glue-code/java-spring-external-task-worker/handling-an-incident.md)
-- [Handling Process Variables](patterns/glue-code/java-spring-external-task-worker/handling-process-variables.md)
+- [Class-level Changes](glue-code/java-spring-external-task-worker/adjusting-the-java-class.md)
+- [Handling a BPMN error](glue-code/java-spring-external-task-worker/handling-a-bpmn-error.md)
+- [Handling a Failure](glue-code/java-spring-external-task-worker/handling-a-failure.md)
+- [Handling an Incident](glue-code/java-spring-external-task-worker/handling-an-incident.md)
+- [Handling Process Variables](glue-code/java-spring-external-task-worker/handling-process-variables.md)
 
 <!-- END-CATALOG -->
 

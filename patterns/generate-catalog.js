@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const PATTERN_ROOT = './patterns';
+const PATTERN_ROOT = './';
 const OUTPUT_FILE = 'PATTERN_CATALOG.md';
-const PATTERN_ROOT_README = './patterns/README.md';
+const PATTERN_ROOT_README = './README.md';
 
 const IGNORED_FOLDERS = new Set(['camunda_7_code_examples', 'camunda_8_code_examples']);
 
