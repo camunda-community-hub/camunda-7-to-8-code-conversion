@@ -1,14 +1,9 @@
 package org.camunda.migration.rewrite.recipes.glue;
 
-import static org.openrewrite.Tree.randomId;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.jetbrains.annotations.NotNull;
 import org.openrewrite.Cursor;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
@@ -17,25 +12,18 @@ import org.openrewrite.java.AnnotationMatcher;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.java.JavaTemplate;
-import org.openrewrite.java.tree.Comment;
-import org.openrewrite.java.tree.Expression;
-import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.*;
 import org.openrewrite.java.tree.J.Annotation;
 import org.openrewrite.java.tree.J.ClassDeclaration;
 import org.openrewrite.java.tree.J.MethodDeclaration;
 import org.openrewrite.java.tree.J.MethodInvocation;
-import org.openrewrite.java.tree.JLeftPadded;
-import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.JavaType.Method;
-import org.openrewrite.java.tree.Space;
-import org.openrewrite.java.tree.TypeTree;
-import org.openrewrite.java.tree.TypeUtils;
-import org.openrewrite.marker.Markers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.worker.JobWorker;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 	
@@ -56,22 +44,33 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 
 		return new JavaIsoVisitor<ExecutionContext>() {
 
-//	        @Override
-//	        public J.CompilationUnit visitCompilationUnit(J.CompilationUnit compilationUnit, ExecutionContext ctx) {
-//	             // Remove old imports
-//                List<J.Import> filteredImports = compilationUnit.getImports().stream()
-//
-//                    .filter(i -> {try { return (!i.getTypeName().equals("org.camunda.bpm.engine.delegate.JavaDelegate"));} catch (Exception ex) {return true;}})
-//                    .filter(i -> {try { return (!i.getTypeName().equals("org.camunda.bpm.engine.delegate.DelegateExecution"));} catch (Exception ex) {return true;}})
-//                    .collect(Collectors.toList());
-//
-//                // Add new imports
-//                addImport(filteredImports, "io.camunda.zeebe.client.api.worker.JobWorker");
-//                addImport(filteredImports, "io.camunda.zeebe.client.api.response.ActivatedJob");
-//                
-//                compilationUnit = compilationUnit.withImports(filteredImports);  
-//                return super.visitCompilationUnit(compilationUnit, ctx); 
-//	        }
+			public static final String CLASS_NAME_JobWorker = "JobWorker";
+			public static final String FQN_JobWorker = "io.camunda.zeebe.spring.client.annotation.JobWorker";
+
+			@Override
+			public J.CompilationUnit visitCompilationUnit(J.CompilationUnit compilationUnit, ExecutionContext ctx) {
+				final J.CompilationUnit newCompilationUnit = super.visitCompilationUnit(compilationUnit, ctx);
+				maybeRemoveImport("org.camunda.bpm.engine.delegate.JavaDelegate");
+				maybeRemoveImport("org.camunda.bpm.engine.delegate.DelegateExecution");
+				return newCompilationUnit;
+			}
+
+//          @Override
+//          public J.CompilationUnit visitCompilationUnit(J.CompilationUnit compilationUnit, ExecutionContext ctx) {
+//               // Remove old imports
+//              List<J.Import> filteredImports = compilationUnit.getImports().stream()
+
+//                  .filter(i -> {try { return (!i.getTypeName().equals("org.camunda.bpm.engine.delegate.JavaDelegate"));} catch (Exception ex) {return true;}})
+//                  .filter(i -> {try { return (!i.getTypeName().equals("org.camunda.bpm.engine.delegate.DelegateExecution"));} catch (Exception ex) {return true;}})
+//                  .collect(Collectors.toList());
+
+//              // Add new imports
+//              addImport(filteredImports, "io.camunda.zeebe.client.api.worker.JobWorker");
+//              addImport(filteredImports, "io.camunda.zeebe.client.api.response.ActivatedJob");
+
+//              compilationUnit = compilationUnit.withImports(filteredImports);
+//  			return super.visitCompilationUnit(compilationUnit, ctx);
+//          }
 //
 //			private void addImport(List<J.Import> filteredImports, String fullyQualifiedName) {
 //				if (filteredImports.stream().noneMatch(i -> i.getTypeName().equals(fullyQualifiedName))) {
@@ -86,7 +85,8 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 //			}
 	        
 			@Override
-			public ClassDeclaration visitClassDeclaration(ClassDeclaration classDecl, ExecutionContext ctx) {
+			@NotNull
+			public ClassDeclaration visitClassDeclaration(@NotNull ClassDeclaration classDecl, @NotNull ExecutionContext ctx) {
 				if (isJavaDelegate(classDecl)) {
 					System.out.println("Adjusting JavaDelegate: " + classDecl.getType().getFullyQualifiedName());
 					LOG.info("Adjusting JavaDelegate: " + classDecl.getType().getFullyQualifiedName());
@@ -99,10 +99,7 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 	                // If no interfaces remain, set `implements` to null
 					classDecl = super.visitClassDeclaration(classDecl.withImplements(updatedImplements.isEmpty() ? null : updatedImplements), ctx);
 					
-					maybeRemoveImport("org.camunda.bpm.engine.delegate.JavaDelegate");
-					maybeRemoveImport("org.camunda.bpm.engine.delegate.DelegateExecution");
-
-					maybeAddImport("io.camunda.zeebe.client.api.worker.JobWorker", false);
+					maybeAddImport(FQN_JobWorker, false);
 					maybeAddImport("io.camunda.zeebe.client.api.response.ActivatedJob", false);
 				}
 				return super.visitClassDeclaration(classDecl, ctx);
@@ -111,7 +108,7 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 
 			private final JavaTemplate workerMethodTemplate = JavaTemplate.builder("@JobWorker(type = \"#{}\", autoComplete=true)")
 					.javaParser(JavaParser.fromJavaVersion().classpath(JavaParser.runtimeClasspath()))
-					.imports("io.camunda.zeebe.client.api.worker.JobWorker")
+					.imports(FQN_JobWorker)
 					.build();
 			
 	        private final JavaTemplate jobWorkerMethod = JavaTemplate.builder("ActivatedJob #{}")
@@ -121,11 +118,15 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 	       			
 			@Override
 			public MethodDeclaration visitMethodDeclaration(MethodDeclaration methodDeclaration, ExecutionContext ctx) {
+				methodDeclaration =  super.visitMethodDeclaration(methodDeclaration, ctx); // make sure to do this so that the assignments within that method are checked
 				J.ClassDeclaration classDecl = getCursor().firstEnclosing(J.ClassDeclaration.class);
+
+				final boolean hasJobWorkerAnnotation = hasAnnotation(methodDeclaration, CLASS_NAME_JobWorker);
 				
 				if (isJavaDelegate(classDecl) // only JavaDelegate classes
 					&& "execute".equals(methodDeclaration.getSimpleName()) // execute method
-				    && !hasAnnotation(methodDeclaration, "@io.camunda.zeebe.client.api.worker.JobWorker")) { // if they don't have the @JobWorker yet
+				    // && !hasAnnotation(methodDeclaration, "@io.camunda.zeebe.client.api.worker.JobWorker")) { // if they don't have the @JobWorker yet
+					&& !hasJobWorkerAnnotation) { // if they don't have the @JobWorker yet
 
 					// Remove @Override (if present)
 					methodDeclaration = removeAnnotation(methodDeclaration, "@java.lang.Override");
@@ -154,13 +155,13 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 					maybeAddImport("java.util.Map");
 	               
 					System.out.println("Adjusted JobWorker: " + methodDeclaration);
-					return methodDeclaration;
-				}				
-				
-				return super.visitMethodDeclaration(methodDeclaration, ctx); // make sure to do this so that the assignments within that method are checked			
+				}
+				return methodDeclaration;
+
+				// return super.visitMethodDeclaration(methodDeclaration, ctx); // make sure to do this so that the assignments within that method are checked
 			 }
 			
-			public MethodDeclaration changeMethodReturnType(MethodDeclaration methodDeclaration, String expression, String type) {				 
+			public MethodDeclaration changeMethodReturnType(MethodDeclaration methodDeclaration, String expression, String type) {
 				 Method methodType = methodDeclaration.getMethodType().withReturnType( JavaType.buildType(type) );
 				 methodDeclaration = methodDeclaration.withReturnTypeExpression( TypeTree.build(expression, ' ') );		 
 	             methodDeclaration = methodDeclaration.withMethodType(methodType)
@@ -211,7 +212,7 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
                 return methodDeclaration;
 			}
 
-			private final JavaTemplate getVariablesAsMap = JavaTemplate.builder("#{any(io.camunda.zeebe.client.api.response.ActivatedJob)}.getVariablesAsMap().getVariable(#{any(java.lang.String)})")
+			private final JavaTemplate getVariableTemplate = JavaTemplate.builder("#{any(io.camunda.zeebe.client.api.response.ActivatedJob)}.getVariable(#{any(java.lang.String)})")
 					.javaParser(JavaParser.fromJavaVersion().classpath(JavaParser.runtimeClasspath()))
 					.imports("io.camunda.zeebe.client.api.response.ActivatedJob")
 					.build();
@@ -222,7 +223,7 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
                 Expression argument = methodInvocation.getArguments().get(0); // The key ("AMOUNT")
 
                 // Apply the transformation using JavaTemplate
-                return getVariablesAsMap.apply(
+                return getVariableTemplate.apply(
                 	cursor,
                     methodInvocation.getCoordinates().replace(),
                     select,  // The original variable (ctx, execution, etc.)
@@ -232,14 +233,13 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 
             private final JavaTemplate putEntryTemplate = JavaTemplate.builder("resultMap.put(#{any(java.lang.String)}, #{any()});")
 					.javaParser(JavaParser.fromJavaVersion().classpath(JavaParser.runtimeClasspath()))
-					.imports("io.camunda.zeebe.client.api.response.ActivatedJob")
             		.build();
 
             private J.MethodInvocation transformSetVariableCall(Cursor cursor, J.MethodInvocation methodInvocation) {
                 //Expression select = methodInvocation.getSelect();  // The variable (ctx, execution, etc.)
                 Expression argumentKey = methodInvocation.getArguments().get(0); // The key ("AMOUNT")
                 Expression argumentValue = methodInvocation.getArguments().get(1); // The value
-                
+
                 return putEntryTemplate.apply(
                 	cursor,
                     methodInvocation.getCoordinates().replace(),
@@ -248,94 +248,57 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
                 );
              }
 
-			 @Override
-            public J.MethodInvocation visitMethodInvocation(J.MethodInvocation methodInvocation, ExecutionContext ctx) {
-                if (isGetVariableCall(methodInvocation)) {
-					System.out.println("Transform " + methodInvocation);
-                    return transformGetVariableCall(getCursor(), methodInvocation);
-                }
-                if (isSetVariableCall(methodInvocation)) {
-					System.out.println("Transform " + methodInvocation);
-                    return transformSetVariableCall(getCursor(), methodInvocation);
-                }
-                return super.visitMethodInvocation(methodInvocation, ctx);
+			@Override
+			@NotNull
+			public J.MethodInvocation visitMethodInvocation(@NotNull J.MethodInvocation methodInvocation, @NotNull ExecutionContext ctx) {
+				methodInvocation = super.visitMethodInvocation(methodInvocation, ctx);
+				if (isDelegateExecutionMethod(methodInvocation)) {
+					if (isGetVariableCall(methodInvocation)) {
+						System.out.println("Transform " + methodInvocation);
+						return transformGetVariableCall(getCursor(), methodInvocation);
+					}
+					if (isSetVariableCall(methodInvocation)) {
+						System.out.println("Transform " + methodInvocation);
+						return transformSetVariableCall(getCursor(), methodInvocation);
+					}
+				}
+				return methodInvocation;
+			}
+
+            private boolean isGetVariableCall(@NotNull J.MethodInvocation methodInvocation) {
+                return methodInvocation.getSimpleName().equals("getVariable")
+                        || methodInvocation.getSimpleName().equals("getVariableLocal");
             }
 
-            @Override
-            public J.TypeCast visitTypeCast(J.TypeCast typeCast, ExecutionContext ctx) {
-                Expression innerExpression = typeCast.getExpression();
-                if (innerExpression instanceof J.MethodInvocation) {
-					System.out.println("visitTypeCast " + typeCast);
+			private static final String CLASS_NAME_VariableScope = "VariableScope";
+			private static final String PACKAGE_NAME_VariableScope = "org.camunda.bpm.engine.delegate";
 
-                	J.MethodInvocation methodInvocation = (J.MethodInvocation) innerExpression;
-                    
-                    if (isGetVariableCall(methodInvocation)) {
-                        J.MethodInvocation newMethodInvocation = transformGetVariableCall(
-                        		new Cursor(getCursor(), methodInvocation), // make sure a proper cursor is created for the inner method
-                        		methodInvocation);
-                        return typeCast.withExpression(newMethodInvocation);
-                    }
-                    else if (isSetVariableCall(methodInvocation)) {
-                        J.MethodInvocation newMethodInvocation = transformSetVariableCall(
-                        		new Cursor(getCursor(), methodInvocation), // make sure a proper cursor is created for the inner method
-                        		methodInvocation);
-                        return typeCast.withExpression(newMethodInvocation);
-                    }
-                }
-                return super.visitTypeCast(typeCast, ctx);
+            private boolean isSetVariableCall(@NotNull J.MethodInvocation methodInvocation) {
+                return methodInvocation.getSimpleName().equals("setVariable")
+                        || methodInvocation.getSimpleName().equals("setVariableLocal");
             }
 
-            @Override
-            public J.Assignment visitAssignment(J.Assignment assignment, ExecutionContext ctx) {
-                Expression assignmentExpr = assignment.getAssignment();
+			private boolean isDelegateExecutionMethod(@NotNull J.MethodInvocation methodInvocation) {
+				final Method methodType = methodInvocation.getMethodType();
+				if (methodType == null) {
+					return false;
+				}
+				final String methodClassName = methodType.getDeclaringType().getClassName();
+				final String methodPackageName = methodType.getDeclaringType().getPackageName();
+				if (!methodClassName.equals(CLASS_NAME_VariableScope) || !methodPackageName.equals(PACKAGE_NAME_VariableScope)) {
+					return false;
+				}
 
-                if (assignmentExpr instanceof J.MethodInvocation) {
-					System.out.println("visitAssignment " + assignment);
-                    J.MethodInvocation methodInvocation = (J.MethodInvocation) assignmentExpr;
+				Expression select = methodInvocation.getSelect();
+				if (!(select instanceof J.Identifier selectIdentifier)) {
+					return false;
+				}
 
-                    if (isGetVariableCall(methodInvocation)) {
-                        return assignment.withAssignment(transformGetVariableCall(getCursor(), methodInvocation));
-                    }
-                    else if (isSetVariableCall(methodInvocation)) {
-                        return assignment.withAssignment(transformSetVariableCall(getCursor(), methodInvocation));
-                    }
-                }
-
-                return super.visitAssignment(assignment, ctx);
-            }
-
-            private boolean isGetVariableCall(J.MethodInvocation methodInvocation) {
-                if (!methodInvocation.getSimpleName().equals("getVariable")) {
-                    return false;
-                }
-
-                Expression select = methodInvocation.getSelect();
-                if (!(select instanceof J.Identifier)) {
-                    return false;
-                }
-
-                J.Identifier selectIdentifier = (J.Identifier) select;
                 JavaType type = selectIdentifier.getType();
 
-                return type instanceof JavaType.Class &&
-                       ((JavaType.Class) type).getFullyQualifiedName().equals(DelegateExecution.class.getTypeName());
-            }
-            private boolean isSetVariableCall(J.MethodInvocation methodInvocation) {
-                if (!methodInvocation.getSimpleName().equals("setVariable")) {
-                    return false;
-                }
-
-                Expression select = methodInvocation.getSelect();
-                if (!(select instanceof J.Identifier)) {
-                    return false;
-                }
-
-                J.Identifier selectIdentifier = (J.Identifier) select;
-                JavaType type = selectIdentifier.getType();
-
-                return type instanceof JavaType.Class &&
-                       ((JavaType.Class) type).getFullyQualifiedName().equals(DelegateExecution.class.getTypeName());
-            }
+				return type instanceof JavaType.Class &&
+						((JavaType.Class) type).getFullyQualifiedName().equals(DelegateExecution.class.getTypeName());
+			}
 
             
             public MethodDeclaration removeAnnotation(MethodDeclaration methodDeclaration, String annotationName) {
@@ -347,10 +310,10 @@ public class JavaDelegateSpringToZeebeWorkerSpring extends Recipe {
 				return methodDeclaration;
 			}
             
-            public boolean hasAnnotation(MethodDeclaration methodDeclaration, String annotationName) {
-            	AnnotationMatcher annotationMatcher = new AnnotationMatcher(annotationName);
+            public boolean hasAnnotation(MethodDeclaration methodDeclaration, String annotationClassName) {
             	for (Annotation a : methodDeclaration.getLeadingAnnotations()) {
-					if (annotationMatcher.matches(a))
+					final String aName = a.getSimpleName();
+					if (aName.equals(annotationClassName))
 						return true;
 				}
             	return false;
