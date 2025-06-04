@@ -85,7 +85,7 @@ The following patterns focus on methods how to handle variables in Camunda 7 and
     public void setVariablesTypedValueAPI(String executionId, int amount, String name) {
         IntegerValue amountTyped = Variables.integerValue(amount);
         StringValue nameTyped = Variables.stringValue(name);
-        VariableMap variableMap = Variables.putValueTyped("amount", amountTyped);
+        VariableMap variableMap = Variables.createVariables().putValueTyped("amount", amountTyped);
         variableMap.putValueTyped("name", nameTyped);
         engine.getRuntimeService().setVariables(executionId, variableMap);
     }
@@ -101,7 +101,7 @@ The following patterns focus on methods how to handle variables in Camunda 7 and
     public Batch setVariablesAsyncTypesValueAPI(List<String> processInstanceIds, int amount, String name) {
         IntegerValue amountTyped = Variables.integerValue(amount);
         StringValue nameTyped = Variables.stringValue(name);
-        VariableMap variableMap = Variables.putValueTyped("amount", amountTyped);
+        VariableMap variableMap = Variables.createVariables().putValueTyped("amount", amountTyped);
         variableMap.putValueTyped("name", nameTyped);
         return engine.getRuntimeService().setVariablesAsync(processInstanceIds, variableMap);
     }
