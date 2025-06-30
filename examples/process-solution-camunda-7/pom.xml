@@ -86,7 +86,7 @@
                         <!-- Adjust list of recipes to what you want to apply: -->
                         <recipe>org.camunda.migration.rewrite.recipes.AllDelegatePrepareRecipes</recipe>
                     </activeRecipes>
-                    <skipMavenParsing>true</skipMavenParsing>
+                    <skipMavenParsing>false</skipMavenParsing>
                 </configuration>
                 <dependencies>
                     <dependency>
