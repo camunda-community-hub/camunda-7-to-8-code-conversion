@@ -62,7 +62,7 @@ public class VariousProcessEngineFunctionsTestClass {
 
     public void variousProcessEngineFunctions(String processDefinitionKey, String signalName, String deleteReason) {
 
-        ProcessInstanceEvent instance1 =camundaClient
+        ProcessInstanceEvent instance1 = camundaClient
                 .newCreateInstanceCommand()
                 .bpmnProcessId(processDefinitionKey)
                 .latestVersion()

@@ -36,8 +36,9 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
     // define preconditions
     TreeVisitor<?, ExecutionContext> check =
         Preconditions.and(
-            new UsesType<>(RecipeConstants.Type.PROCESS_ENGINE, true),
-            new UsesMethod<>(RecipeConstants.Method.GET_RUNTIME_SERVICE, true),
+            Preconditions.or(
+                new UsesType<>(RecipeConstants.Type.PROCESS_ENGINE, true),
+                new UsesType<>(RecipeConstants.Type.RUNTIME_SERVICE, true)),
             Preconditions.or(
                 new UsesMethod<>(
                     RecipeConstants.Method.START_PROCESS_INSTANCE_BY_KEY
@@ -200,7 +201,8 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
            * replaced by wrapper methods + class methods.
            */
           @Override
-          public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations decls, ExecutionContext ctx) {
+          public J.VariableDeclarations visitVariableDeclarations(
+              J.VariableDeclarations decls, ExecutionContext ctx) {
 
             // Analyze first variable
             J.VariableDeclarations.NamedVariable firstVar = decls.getVariables().get(0);
@@ -246,7 +248,8 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
 
           /** Method invocations are visited and replaced */
           @Override
-          public J.MethodInvocation visitMethodInvocation(J.MethodInvocation elem, ExecutionContext ctx) {
+          public J.MethodInvocation visitMethodInvocation(
+              J.MethodInvocation elem, ExecutionContext ctx) {
             J.Identifier camundaClient =
                 RecipeUtils.createSimpleIdentifier(
                     "camundaClient", RecipeConstants.Type.CAMUNDA_CLIENT);

@@ -1,7 +1,6 @@
 package org.camunda.migration.rewrite.recipes.client.migrate;
 
 import java.util.List;
-
 import org.camunda.migration.rewrite.recipes.utils.CamundaClientCodes;
 import org.camunda.migration.rewrite.recipes.utils.RecipeConstants;
 import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
@@ -17,8 +16,7 @@ import org.openrewrite.marker.Markers;
 public class ReplaceSignalMethodsRecipe extends Recipe {
 
   /** Instantiates a new instance. */
-  public ReplaceSignalMethodsRecipe() {
-  }
+  public ReplaceSignalMethodsRecipe() {}
 
   @Override
   public String getDisplayName() {
@@ -36,13 +34,13 @@ public class ReplaceSignalMethodsRecipe extends Recipe {
     // define preconditions
     TreeVisitor<?, ExecutionContext> check =
         Preconditions.and(
-            new UsesType<>(RecipeConstants.Type.PROCESS_ENGINE, true),
-            new UsesMethod<>(RecipeConstants.Method.GET_RUNTIME_SERVICE, true),
+            Preconditions.or(
+                new UsesType<>(RecipeConstants.Type.PROCESS_ENGINE, true),
+                new UsesType<>(RecipeConstants.Type.RUNTIME_SERVICE, true)),
             Preconditions.or(
                 new UsesMethod<>(
-                        RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
-                        + RecipeConstants.Parameters.ANY,
-                        true),
+                    RecipeConstants.Method.SIGNAL_EVENT_RECEIVED + RecipeConstants.Parameters.ANY,
+                    true),
                 new UsesMethod<>(RecipeConstants.Method.CREATE_SIGNAL_EVENT, true)));
 
     return Preconditions.check(
@@ -52,19 +50,19 @@ public class ReplaceSignalMethodsRecipe extends Recipe {
           // engine - simple method
           final MethodMatcher engineBroadcastSignalGlobally =
               new MethodMatcher(
-                      RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
+                  RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
                       + RecipeConstants.Parameters.build("String"));
           final MethodMatcher engineBroadcastSignalToOneExecution =
               new MethodMatcher(
-                      RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
+                  RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
                       + RecipeConstants.Parameters.build("String", "String"));
           final MethodMatcher engineBroadcastSignalGloballyWithVariables =
               new MethodMatcher(
-                      RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
+                  RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
                       + RecipeConstants.Parameters.build("String", "java.util.Map"));
           final MethodMatcher engineBroadcastSignalToOneExecutionWithVariables =
               new MethodMatcher(
-                      RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
+                  RecipeConstants.Method.SIGNAL_EVENT_RECEIVED
                       + RecipeConstants.Parameters.build("String", "String", "java.util.Map"));
 
           // engine - builder pattern
@@ -84,13 +82,16 @@ public class ReplaceSignalMethodsRecipe extends Recipe {
               RecipeUtils.createSimpleJavaTemplate(CamundaClientCodes.BROADCAST_SIGNAL);
 
           final JavaTemplate wrapperBroadcastSignalWithVariables =
-              RecipeUtils.createSimpleJavaTemplate(CamundaClientCodes.BROADCAST_SIGNAL_WITH_VARIABLES);
+              RecipeUtils.createSimpleJavaTemplate(
+                  CamundaClientCodes.BROADCAST_SIGNAL_WITH_VARIABLES);
 
           final JavaTemplate wrapperBroadcastSignalWithTenantId =
-              RecipeUtils.createSimpleJavaTemplate(CamundaClientCodes.BROADCAST_SIGNAL_WITH_TENANT_ID);
+              RecipeUtils.createSimpleJavaTemplate(
+                  CamundaClientCodes.BROADCAST_SIGNAL_WITH_TENANT_ID);
 
           final JavaTemplate wrapperBroadcastSignalWithTenantIdWithVariables =
-              RecipeUtils.createSimpleJavaTemplate(CamundaClientCodes.BROADCAST_SIGNAL_WITH_TENANT_ID_WITH_VARIABLES);
+              RecipeUtils.createSimpleJavaTemplate(
+                  CamundaClientCodes.BROADCAST_SIGNAL_WITH_TENANT_ID_WITH_VARIABLES);
 
           /**
            * One method is replaced with another method, thus visiting J.MethodInvocations works.
@@ -101,7 +102,8 @@ public class ReplaceSignalMethodsRecipe extends Recipe {
           @Override
           public J visitMethodInvocation(J.MethodInvocation elem, ExecutionContext ctx) {
             J.Identifier camundaClientWrapper =
-                RecipeUtils.createSimpleIdentifier("camundaClient", RecipeConstants.Type.CAMUNDA_CLIENT);
+                RecipeUtils.createSimpleIdentifier(
+                    "camundaClient", RecipeConstants.Type.CAMUNDA_CLIENT);
 
             // a comment is added in case the executionId was removed
             TextComment removedExecutionIdComment =

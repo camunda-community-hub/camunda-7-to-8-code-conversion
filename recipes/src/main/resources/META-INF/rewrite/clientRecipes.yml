@@ -7,7 +7,6 @@ recipeList:
       groupId: io.camunda
       artifactId: spring-boot-starter-camunda-sdk
       version: 8.8.0-alpha4.1
-  - org.camunda.migration.rewrite.recipes.client.prepare.EnsureProcessEngineRecipe
   - org.camunda.migration.rewrite.recipes.client.prepare.AddCamundaClientDependencyRecipe
   - org.camunda.migration.rewrite.recipes.sharedRecipes.ReplaceTypedValueAPIRecipe
 ---
