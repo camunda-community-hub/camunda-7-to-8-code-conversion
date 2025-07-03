@@ -18,7 +18,7 @@ void testProcessInstanceIsWaitingAtUserTask() {
 
 ## Camunda 8
 
-Camunda 8 uses [Camunda Process Test (CPT)](https://docs.camunda.io/docs/next/apis-tools/testing/getting-started/) to check the state of a process instance. There are currently less utility methods (like `processEngine()`) and tests rely on normal Spring behavior plus custom code.
+Camunda 8 uses [Camunda Process Test (CPT)](https://docs.camunda.io/docs/next/apis-tools/testing/getting-started/) to check the state of a process instance. There are currently less utility methods (like `runtimeService()`) and tests rely on normal Spring behavior plus custom code.
 
 In test cases you typically want blocking behavior for the client API, so use `send().join()`:
 
