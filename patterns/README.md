@@ -74,4 +74,22 @@ Patterns:
 - [Handling an Incident](30-glue-code/20-java-spring-external-task-worker/handling-an-incident.md)
 - [Handling Process Variables](30-glue-code/20-java-spring-external-task-worker/handling-process-variables.md)
 
+## Test Code
+
+Code written to test your solution, e.g. using JUnit.
+
+
+### Assertions
+
+Most tests for Camunda 7 use [Camunda Platform Assert](https://github.com/camunda/camunda-bpm-platform/tree/master/test-utils/assert) within Junit for automated unit tests.
+
+Patterns:
+
+- [Complete Test Case](40-test-assertions/10-assertions/10-complete-test-case.md)
+- [Process Instance Assertions](40-test-assertions/10-assertions/20-process-instance.md)
+- [Process Variable Assertions](40-test-assertions/10-assertions/30-process-variable.md)
+- [User Task Assertions](40-test-assertions/10-assertions/40-user-task.md)
+- [Message Correlation Assertions](40-test-assertions/10-assertions/50-message.md)
+- [Job Execution in Test Cases](40-test-assertions/10-assertions/60-job.md)
+
 <!-- END-CATALOG -->
