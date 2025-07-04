@@ -1,4 +1,4 @@
-# Message Correlation Assertions
+# Message Correlation
 
 ## Camunda 7
 
