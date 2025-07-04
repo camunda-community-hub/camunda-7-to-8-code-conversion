@@ -79,9 +79,9 @@ Patterns:
 Code written to test your solution, e.g. using JUnit.
 
 
-### Assertions
+### Camunda Platform Assert &#8594; Camunda Process Test (CPT)
 
-Most tests for Camunda 7 use [Camunda Platform Assert](https://github.com/camunda/camunda-bpm-platform/tree/master/test-utils/assert) within Junit for automated unit tests, whereas in Camunda 8 you should use [Camunda Process Test (CPT)](https://docs.camunda.io/docs/next/apis-tools/testing/getting-started/) (starting from version 8.8).
+Most tests for Camunda 7 use [Camunda Platform Assert](https://github.com/camunda/camunda-bpm-platform/tree/master/test-utils/assert) combined with JUnit for automated unit tests, whereas in Camunda 8 you will use [Camunda Process Test (CPT)](https://docs.camunda.io/docs/next/apis-tools/testing/getting-started/) (starting from version 8.8).
 
 Patterns:
 
@@ -89,7 +89,7 @@ Patterns:
 - [Process Instance Assertions](40-test-assertions/10-assertions/20-process-instance.md)
 - [Process Variable Assertions](40-test-assertions/10-assertions/30-process-variable.md)
 - [User Task Assertions](40-test-assertions/10-assertions/40-user-task.md)
-- [Message Correlation Assertions](40-test-assertions/10-assertions/50-message.md)
+- [Message Correlation](40-test-assertions/10-assertions/50-message.md)
 - [Job Execution in Test Cases](40-test-assertions/10-assertions/60-job.md)
 
 <!-- END-CATALOG -->

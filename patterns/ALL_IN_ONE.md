@@ -35,12 +35,12 @@ Patterns:
     - [Handling an Incident](#handling-an-incident)
     - [Handling Process Variables](#handling-process-variables)
 - [Test Code](#test-code)
-  - [Assertions](#assertions)
+  - [Camunda Platform Assert &#8594; Camunda Process Test (CPT)](#camunda-platform-assert-8594-camunda-process-test-cpt)
     - [Complete Test Case](#complete-test-case)
     - [Process Instance Assertions](#process-instance-assertions)
     - [Process Variable Assertions](#process-variable-assertions)
     - [User Task Assertions](#user-task-assertions)
-    - [Message Correlation Assertions](#message-correlation-assertions)
+    - [Message Correlation](#message-correlation)
     - [Job Execution in Test Cases](#job-execution-in-test-cases)
 
 ## General thoughts and changes
@@ -1697,9 +1697,9 @@ Check the [README](./README.md) for more details on class-level changes.
 Code written to test your solution, e.g. using JUnit.
 
 
-### Assertions
+### Camunda Platform Assert &#8594; Camunda Process Test (CPT)
 
-Most tests for Camunda 7 use [Camunda Platform Assert](https://github.com/camunda/camunda-bpm-platform/tree/master/test-utils/assert) within Junit for automated unit tests, whereas in Camunda 8 you should use [Camunda Process Test (CPT)](https://docs.camunda.io/docs/next/apis-tools/testing/getting-started/) (starting from version 8.8).
+Most tests for Camunda 7 use [Camunda Platform Assert](https://github.com/camunda/camunda-bpm-platform/tree/master/test-utils/assert) combined with JUnit for automated unit tests, whereas in Camunda 8 you will use [Camunda Process Test (CPT)](https://docs.camunda.io/docs/next/apis-tools/testing/getting-started/) (starting from version 8.8).
 
 
 #### Complete Test Case
@@ -1993,7 +1993,7 @@ The following utility methods are used in this test case:
 
 ---
 
-#### Message Correlation Assertions
+#### Message Correlation
 
 ###### Camunda 7
 
