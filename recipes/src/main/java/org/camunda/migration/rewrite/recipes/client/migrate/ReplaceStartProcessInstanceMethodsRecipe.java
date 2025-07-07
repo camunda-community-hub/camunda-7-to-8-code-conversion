@@ -1,6 +1,7 @@
 package org.camunda.migration.rewrite.recipes.client.migrate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.camunda.migration.rewrite.recipes.utils.RecipeConstants;
 import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
@@ -8,8 +9,6 @@ import org.openrewrite.*;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.MethodMatcher;
-import org.openrewrite.java.search.UsesMethod;
-import org.openrewrite.java.search.UsesType;
 import org.openrewrite.java.tree.*;
 
 public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
@@ -30,35 +29,8 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
   @Override
   public TreeVisitor<?, ExecutionContext> getVisitor() {
 
-    // define preconditions
-    TreeVisitor<?, ExecutionContext> check =
-        Preconditions.and(
-            Preconditions.or(
-                new UsesType<>(RecipeConstants.Type.PROCESS_ENGINE, true),
-                new UsesType<>(RecipeConstants.Type.RUNTIME_SERVICE, true)),
-            Preconditions.or(
-                new UsesMethod<>(
-                    RecipeConstants.Method.START_PROCESS_INSTANCE_BY_KEY
-                        + RecipeConstants.Parameters.ANY,
-                    true),
-                new UsesMethod<>(RecipeConstants.Method.CREATE_PROCESS_INSTANCE_BY_KEY, true),
-                new UsesMethod<>(
-                    RecipeConstants.Method.START_PROCESS_INSTANCE_BY_ID
-                        + RecipeConstants.Parameters.ANY,
-                    true),
-                new UsesMethod<>(RecipeConstants.Method.CREATE_PROCESS_INSTANCE_BY_ID, true),
-                new UsesMethod<>(
-                    RecipeConstants.Method.START_PROCESS_INSTANCE_BY_MESSAGE
-                        + RecipeConstants.Parameters.ANY,
-                    true),
-                new UsesMethod<>(
-                    RecipeConstants.Method
-                            .START_PROCESS_INSTANCE_BY_MESSAGE_AND_PROCESS_DEFINITION_ID
-                        + RecipeConstants.Parameters.ANY,
-                    true)));
-
     return Preconditions.check(
-        check,
+        StartProcessInstanceMethodsRules.preconditions,
         new JavaIsoVisitor<ExecutionContext>() {
 
           /**
@@ -80,11 +52,9 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
               // join specs - possible because we don't touch the method invocations
               List<RecipeUtils.MethodInvocationReplacementSpec> commonSpecs =
                   Stream.concat(
-                          StartProcessInstanceMethodsRules.methodInvocationSimpleReplacementSpecs
-                              .stream()
+                          StartProcessInstanceMethodsRules.simpleMethodInvocations.stream()
                               .map(spec -> (RecipeUtils.MethodInvocationReplacementSpec) spec),
-                          StartProcessInstanceMethodsRules.methodInvocationBuilderReplacementSpecs
-                              .stream()
+                          StartProcessInstanceMethodsRules.builderMethodInvocations.stream()
                               .map(spec -> (RecipeUtils.MethodInvocationReplacementSpec) spec))
                       .toList();
 
@@ -123,9 +93,12 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
                           Stream.concat(
                                   declarations.getComments().stream(),
                                   spec.textComments().stream()
-                                      .map(text -> RecipeUtils.createSimpleComment(declarations, text)))
+                                      .map(
+                                          text ->
+                                              RecipeUtils.createSimpleComment(declarations, text)))
                               .toList());
 
+                  // visit method invocations
                   modifiedDeclarations = super.visitVariableDeclarations(modifiedDeclarations, ctx);
 
                   return maybeAutoFormat(declarations, modifiedDeclarations, ctx);
@@ -143,8 +116,9 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
           public J.MethodInvocation visitMethodInvocation(
               J.MethodInvocation invocation, ExecutionContext ctx) {
 
+            // visit simple method invocations
             for (RecipeUtils.MethodInvocationSimpleReplacementSpec spec :
-                StartProcessInstanceMethodsRules.methodInvocationSimpleReplacementSpecs) {
+                StartProcessInstanceMethodsRules.simpleMethodInvocations) {
               if (spec.matcher().matches(invocation)) {
 
                 return maybeAutoFormat(
@@ -162,48 +136,59 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends Recipe {
               }
             }
 
-            // replace builder patterns by key and id
-            if (new MethodMatcher(
-                    "org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder execute()")
-                .matches(invocation)) {
-              Map<String, Expression> collectedArgs = new HashMap<>();
-              Expression current = invocation.getSelect();
+            // map builder patterns
+            Map<MethodMatcher, List<RecipeUtils.MethodInvocationBuilderReplacementSpec>>
+                builderSpecMap =
+                    StartProcessInstanceMethodsRules.builderMethodInvocations.stream()
+                        .collect(
+                            Collectors.groupingBy(
+                                RecipeUtils.MethodInvocationBuilderReplacementSpec::matcher));
 
-              while (current instanceof J.MethodInvocation mi) {
-                String name = mi.getSimpleName();
-                if (!mi.getArguments().isEmpty()
-                    && !(mi.getArguments().get(0) instanceof J.Empty)) {
-                  collectedArgs.put(name, mi.getArguments().get(0));
+            // loop through builder pattern groups
+            for (Map.Entry<MethodMatcher, List<RecipeUtils.MethodInvocationBuilderReplacementSpec>>
+                entry : builderSpecMap.entrySet()) {
+              MethodMatcher matcher = entry.getKey();
+              if (matcher.matches(invocation)) {
+                Map<String, Expression> collectedArgs = new HashMap<>();
+                Expression current = invocation.getSelect();
+
+                // extract arguments
+                while (current instanceof J.MethodInvocation mi) {
+                  String name = mi.getSimpleName();
+                  if (!mi.getArguments().isEmpty()
+                      && !(mi.getArguments().get(0) instanceof J.Empty)) {
+                    collectedArgs.put(name, mi.getArguments().get(0));
+                  }
+                  current = mi.getSelect();
                 }
-                current = mi.getSelect();
-              }
 
-              for (RecipeUtils.MethodInvocationBuilderReplacementSpec spec :
-                  StartProcessInstanceMethodsRules.methodInvocationBuilderReplacementSpecs) {
+                // loop through pattern options
+                for (RecipeUtils.MethodInvocationBuilderReplacementSpec spec : entry.getValue()) {
+                  if (collectedArgs.keySet().equals(spec.methodNamesToExtractParameters())) {
+                    Object[] args =
+                        RecipeUtils.prependCamundaClient(
+                            spec.extractedParametersToApply().stream()
+                                .map(collectedArgs::get)
+                                .toArray());
 
-                if (collectedArgs.keySet().equals(spec.methodNamesToExtractParameters())) {
-                  Object[] args =
-                      RecipeUtils.prependCamundaClient(
-                          spec.extractedParametersToApply().stream()
-                              .map(collectedArgs::get)
-                              .toArray());
-
-                  return maybeAutoFormat(
-                      invocation,
-                      (J.MethodInvocation)
-                          RecipeUtils.applyTemplate(
-                              spec.template(),
-                              invocation,
-                              getCursor(),
-                              args,
-                              getCursor().getNearestMessage(invocation.getId().toString()) != null
-                                  ? Collections.emptyList()
-                                  : spec.textComments()),
-                      ctx);
+                    return maybeAutoFormat(
+                        invocation,
+                        (J.MethodInvocation)
+                            RecipeUtils.applyTemplate(
+                                spec.template(),
+                                invocation,
+                                getCursor(),
+                                args,
+                                getCursor().getNearestMessage(invocation.getId().toString()) != null
+                                    ? Collections.emptyList()
+                                    : spec.textComments()),
+                        ctx);
+                  }
                 }
               }
             }
 
+            // TODO: standardize and extract rules
             if (invocation.getSelect() != null
                 && TypeUtils.isOfType(
                     invocation.getSelect().getType(),
