@@ -75,6 +75,9 @@ public class RecipeUtils {
       List<String> textComments)
       implements MethodInvocationReplacementSpec {}
 
+  public record MethodInvocationReturnReplacementSpec(
+      MethodMatcher matcher, JavaTemplate template) {}
+
   public static Object[] createArgs(
       J.MethodInvocation invocation,
       List<MethodInvocationSimpleReplacementSpec.NamedArg> argumentIndexes) {
