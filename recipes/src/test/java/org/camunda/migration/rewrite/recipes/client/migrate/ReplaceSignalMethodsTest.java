@@ -32,7 +32,7 @@ class ReplaceSignalMethodsTest implements RewriteTest {
 
                                     @Autowired
                                     private ProcessEngine engine;
-                                    
+
                                     @Autowired
                                     private RuntimeService runtimeService;
 
@@ -147,7 +147,7 @@ class ReplaceSignalMethodsTest implements RewriteTest {
 
                                     @Autowired
                                     private ProcessEngine engine;
-                                    
+
                                     @Autowired
                                     private RuntimeService runtimeService;
 
