@@ -76,6 +76,7 @@ public class VariousProcessEngineFunctionsTestClass {
                 .signalName(signalName)
                 .send()
                 .join();
+        // delete reason was removed
         camundaClient
                 .newCancelInstanceCommand(Long.valueOf(processInstanceId))
                 .send()
