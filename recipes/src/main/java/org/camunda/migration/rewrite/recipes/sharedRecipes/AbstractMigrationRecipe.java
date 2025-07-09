@@ -116,7 +116,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
               }
             }
 
-            maybeRemoveImport(RecipeConstants.Type.ENGINE_PROCESS_INSTANCE);
+            maybeRemoveImport(declarations.getTypeAsFullyQualified());
 
             return super.visitVariableDeclarations(declarations, ctx);
           }

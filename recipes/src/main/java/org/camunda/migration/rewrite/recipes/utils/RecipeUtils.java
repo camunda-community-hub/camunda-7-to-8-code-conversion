@@ -116,4 +116,18 @@ public class RecipeUtils {
                 .toList());
     // .withPrefix(expression.getPrefix());
   }
+
+  public static Expression updateType(Cursor cursor, Expression input) {
+
+    if (!(input instanceof J.Identifier identifier)) {
+      return input;
+    }
+
+    String newFqn = cursor.getNearestMessage(identifier.getSimpleName());
+
+    if (newFqn != null) {
+      return identifier.withType(JavaType.buildType(newFqn));
+    }
+    return input;
+  }
 }
