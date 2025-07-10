@@ -254,17 +254,17 @@ public class TestDelegate {
         final var boolVariable = job.getVariable("boolVariable");
         final var jsonVariable = job.getVariable("jsonVariable");
         final var fileVariable = job.getVariable("fileVariable");
-        // type changed to java.lang.Object
+        // please check type
         final Object stringVariableTyped = job.getVariable("stringVariable");
-        // type changed to java.lang.Object
+        // please check type
         final Object integerVariableTyped = job.getVariable("integerVariable");
-        // type changed to java.lang.Object
+        // please check type
         final Object doubleVariableTyped = job.getVariable("doubleVariable");
-        // type changed to java.lang.Object
+        // please check type
         final Object boolVariableTyped = job.getVariable("boolVariable");
-        // type changed to java.lang.Object
+        // please check type
         final Object jsonVariableTyped = job.getVariable("jsonVariable");
-        // type changed to java.lang.Object
+        // please check type
         final Object fileVariableTyped = job.getVariable("fileVariable");
         final var stringVariableLocal = job.getVariable("stringVariableLocal");
         final var integerVariableLocal = job.getVariable("integerVariableLocal");

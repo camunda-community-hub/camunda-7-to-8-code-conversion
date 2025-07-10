@@ -8,6 +8,7 @@ import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
 import org.openrewrite.*;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.java.*;
+import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.search.UsesType;
 import org.openrewrite.java.tree.*;
 import org.openrewrite.marker.Markers;
@@ -43,7 +44,10 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
             new UsesType<>(RecipeConstants.Type.SHORT_VALUE, true),
             new UsesType<>(RecipeConstants.Type.DOUBLE_VALUE, true),
             new UsesType<>(RecipeConstants.Type.FLOAT_VALUE, true),
-            new UsesType<>(RecipeConstants.Type.BYTES_VALUE, true));
+            new UsesType<>(RecipeConstants.Type.BYTES_VALUE, true),
+            new UsesMethod<>("org.camunda.bpm.engine.delegate.VariableScope getVariableTyped(..)"),
+            new UsesMethod<>(
+                "org.camunda.bpm.engine.delegate.VariableScope getVariableLocalTyped(..)"));
 
     return Preconditions.check(
         check,
@@ -171,6 +175,37 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                           Collectors.groupingBy(
                               RecipeUtils.MethodInvocationBuilderReplacementSpec::matcher));
 
+          public static String mapTypedValueToNewFqn(JavaType type) {
+            if (!(type instanceof JavaType.FullyQualified fqType)) {
+              return "java.lang.Object"; // Default fallback
+            }
+
+            String fqn = fqType.getFullyQualifiedName();
+
+            if (fqn.equals("org.camunda.bpm.engine.variable.value.TypedValue")) {
+              return "java.lang.Object";
+            }
+
+            // Handle known subclasses like IntegerValue, StringValue, etc.
+            if (fqn.startsWith("org.camunda.bpm.engine.variable.value.")) {
+              String simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
+
+              return switch (simpleName) {
+                case "IntegerValue" -> "java.lang.Integer";
+                case "StringValue" -> "java.lang.String";
+                case "BooleanValue" -> "java.lang.Boolean";
+                case "DoubleValue" -> "java.lang.Double";
+                case "LongValue" -> "java.lang.Long";
+                case "ShortValue" -> "java.lang.Short";
+                case "DateValue" -> "java.util.Date";
+                case "BytesValue" -> "byte[]";
+                default -> "java.lang.Object"; // Fallback for unknown types
+              };
+            }
+
+            return "java.lang.Object";
+          }
+
           /** Visit variable declarations to replace all typedValue types */
           @Override
           public J visitVariableDeclarations(
@@ -239,8 +274,67 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
 
                   maybeRemoveImport(declarations.getTypeAsFullyQualified());
 
+                  System.out.println(modifiedDeclarations);
+
                   return maybeAutoFormat(declarations, modifiedDeclarations, ctx);
                 }
+              }
+
+              if ((new MethodMatcher(
+                          "org.camunda.bpm.engine.delegate.VariableScope getVariableTyped(..)")
+                      .matches(invocation)
+                  || new MethodMatcher(
+                          "org.camunda.bpm.engine.delegate.VariableScope getVariableLocalTyped(..)")
+                      .matches(invocation))) {
+
+                // get modifiers
+                List<J.Modifier> modifiers = declarations.getModifiers();
+
+                String newFqn = mapTypedValueToNewFqn(originalName.getType());
+
+                // Create simple java template to adjust variable declaration type, but keep
+                // invocation as is
+                J.VariableDeclarations modifiedDeclarations =
+                    RecipeUtils.createSimpleJavaTemplate(
+                            (modifiers == null || modifiers.isEmpty()
+                                    ? ""
+                                    : modifiers.stream()
+                                        .map(J.Modifier::toString)
+                                        .collect(Collectors.joining(" ", "", " ")))
+                                + newFqn.substring(newFqn.lastIndexOf('.') + 1)
+                                + " "
+                                + originalName.getSimpleName()
+                                + " = #{any()}",
+                            "java.lang.Object")
+                        .apply(getCursor(), declarations.getCoordinates().replace(), invocation);
+
+                maybeAddImport(newFqn);
+
+                // record fqn of identifier for later uses
+                getCursor()
+                    .dropParentUntil(parent -> parent instanceof J.Block)
+                    .putMessage(originalName.toString(), newFqn);
+
+                // merge comments
+                modifiedDeclarations =
+                    modifiedDeclarations.withComments(
+                        Stream.concat(
+                                declarations.getComments().stream(),
+                                Stream.of(
+                                    RecipeUtils.createSimpleComment(
+                                        declarations, " please check type")))
+                            .toList());
+
+                // visit method invocations
+                modifiedDeclarations =
+                    (J.VariableDeclarations)
+                        super.visitVariableDeclarations(modifiedDeclarations, ctx);
+
+                if (originalName.getType() instanceof JavaType.FullyQualified oldFqn) {
+                  maybeRemoveImport(oldFqn);
+                }
+
+                return maybeAutoFormat(declarations, modifiedDeclarations, ctx);
               }
             }
 
@@ -593,6 +687,13 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                       getCursor(),
                       invocation.getCoordinates().replace(),
                       invocation.getSelect().withType(JavaType.buildType(returnTypeFqn)));
+            }
+
+            if (invocation.getSimpleName().equals("getVariableTyped")
+                || invocation.getSimpleName().equals("getVariableLocalTyped")) {
+              J.Identifier newIdent =
+                  RecipeUtils.createSimpleIdentifier("getVariable", "java.lang.String");
+              return invocation.withName(newIdent);
             }
 
             return super.visitMethodInvocation(invocation, ctx);

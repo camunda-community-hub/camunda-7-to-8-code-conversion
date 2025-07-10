@@ -12,12 +12,11 @@ class JavaDelegateTypedValueTest implements RewriteTest {
 
   @Override
   public void defaults(RecipeSpec spec) {
-    spec.recipes(new ReplaceTypedValueAPIRecipe(), new DelegateReplaceTypedValueAPIRecipe()).expectedCyclesThatMakeChanges(2)
+    spec.recipes(new ReplaceTypedValueAPIRecipe())
         .parser(JavaParser.fromJavaVersion().classpath(JavaParser.runtimeClasspath()));
   }
 
-  // TODO: fix
-  // @Test
+  @Test
   void ReplaceTypedValueTest() {
     rewriteRun(
         java(
@@ -58,8 +57,9 @@ public class RetrievePaymentAdapterProcessVariablesTypedValueAPI implements Java
 
     @Override
     public void execute(DelegateExecution execution) {
+        // please check type
         Integer typedAmount = execution.getVariable("amount");
-        // type changed to java.lang.Object
+        // please check type
         Object stringVariableTyped = execution.getVariable("stringVariable");
         int amount = typedAmount;
         // do something...
@@ -68,5 +68,45 @@ public class RetrievePaymentAdapterProcessVariablesTypedValueAPI implements Java
     }
 }
 """));
+  }
+
+  @Test
+  void ReplaceTypedValueTest2() {
+    rewriteRun(
+            java(
+                    """
+                    package org.camunda.conversion.java_delegates.handling_process_variables;
+                    
+                    import org.camunda.bpm.engine.delegate.DelegateExecution;
+                    import org.camunda.bpm.engine.delegate.JavaDelegate;
+                    import org.camunda.bpm.engine.variable.value.IntegerValue;
+                    import org.springframework.stereotype.Component;
+                    
+                    @Component
+                    public class RetrievePaymentAdapterProcessVariablesTypedValueAPI implements JavaDelegate {
+                    
+                        @Override
+                        public void execute(DelegateExecution execution) {
+                            IntegerValue typedAmount = execution.getVariableTyped("amount");
+                        }
+                    }
+                                    """,
+                    """
+                    package org.camunda.conversion.java_delegates.handling_process_variables;
+                    
+                    import org.camunda.bpm.engine.delegate.DelegateExecution;
+                    import org.camunda.bpm.engine.delegate.JavaDelegate;
+                    import org.springframework.stereotype.Component;
+                    
+                    @Component
+                    public class RetrievePaymentAdapterProcessVariablesTypedValueAPI implements JavaDelegate {
+                    
+                        @Override
+                        public void execute(DelegateExecution execution) {
+                            // please check type
+                            Integer typedAmount = execution.getVariable("amount");
+                        }
+                    }
+                    """));
   }
 }
