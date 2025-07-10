@@ -3,7 +3,6 @@ package org.camunda.migration.rewrite.recipes.sharedRecipes;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.camunda.migration.rewrite.recipes.utils.RecipeConstants;
 import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
 import org.openrewrite.*;
 import org.openrewrite.java.JavaIsoVisitor;
@@ -75,11 +74,19 @@ public abstract class AbstractMigrationRecipe extends Recipe {
                 // declaration type
                 if (spec.matcher().matches(invocation)) {
 
+                  // get modifiers
+                  List<J.Modifier> modifiers = declarations.getModifiers();
+
                   // Create simple java template to adjust variable declaration type, but keep
                   // invocation as is
                   J.VariableDeclarations modifiedDeclarations =
                       RecipeUtils.createSimpleJavaTemplate(
-                              spec.returnTypeFqn()
+                              (modifiers == null || modifiers.isEmpty()
+                                      ? ""
+                                      : modifiers.stream()
+                                          .map(J.Modifier::toString)
+                                          .collect(Collectors.joining(" ", "", " ")))
+                                  + spec.returnTypeFqn()
                                       .substring(spec.returnTypeFqn().lastIndexOf('.') + 1)
                                   + " "
                                   + originalName.getSimpleName()
@@ -110,6 +117,8 @@ public abstract class AbstractMigrationRecipe extends Recipe {
 
                   // visit method invocations
                   modifiedDeclarations = super.visitVariableDeclarations(modifiedDeclarations, ctx);
+
+                  maybeRemoveImport(declarations.getTypeAsFullyQualified());
 
                   return maybeAutoFormat(declarations, modifiedDeclarations, ctx);
                 }
@@ -240,6 +249,12 @@ public abstract class AbstractMigrationRecipe extends Recipe {
 
             // no match, continue tree traversal
             return super.visitMethodInvocation(invocation, ctx);
+          }
+
+          @Override
+          public J.Identifier visitIdentifier(J.Identifier identifier, ExecutionContext ctx) {
+
+            return (J.Identifier) RecipeUtils.updateType(getCursor(), identifier);
           }
         });
   }

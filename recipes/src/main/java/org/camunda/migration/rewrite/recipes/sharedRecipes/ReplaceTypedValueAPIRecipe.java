@@ -191,11 +191,19 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                 // declaration type
                 if (spec.matcher().matches(invocation)) {
 
+                  // get modifiers
+                  List<J.Modifier> modifiers = declarations.getModifiers();
+
                   // Create simple java template to adjust variable declaration type, but keep
                   // invocation as is
                   J.VariableDeclarations modifiedDeclarations =
                       RecipeUtils.createSimpleJavaTemplate(
-                              spec.returnTypeFqn()
+                              (modifiers == null || modifiers.isEmpty()
+                                      ? ""
+                                      : modifiers.stream()
+                                          .map(J.Modifier::toString)
+                                          .collect(Collectors.joining(" ", "", " ")))
+                                  + spec.returnTypeFqn()
                                       .substring(spec.returnTypeFqn().lastIndexOf('.') + 1)
                                   + " "
                                   + originalName.getSimpleName()
@@ -549,6 +557,8 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                   args.add(RecipeUtils.updateType(getCursor(), put.getArguments().get(0)));
                   args.add(RecipeUtils.updateType(getCursor(), put.getArguments().get(1)));
                 }
+
+                maybeAddImport("java.util.Map");
 
                 return mapOfEntries.apply(
                     getCursor(),
