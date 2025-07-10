@@ -17,7 +17,6 @@ class ReplaceSignalMethodsTest implements RewriteTest {
                                 package org.camunda.community.migration.example;
 
                                 import org.camunda.bpm.engine.ProcessEngine;
-                                import org.camunda.bpm.engine.RuntimeService;
                                 import io.camunda.client.CamundaClient;
                                 import org.springframework.beans.factory.annotation.Autowired;
                                 import org.springframework.stereotype.Component;
@@ -33,9 +32,6 @@ class ReplaceSignalMethodsTest implements RewriteTest {
                                     @Autowired
                                     private ProcessEngine engine;
 
-                                    @Autowired
-                                    private RuntimeService runtimeService;
-
                                     public void broadcastSignalMethods(String signalName, String executionId, String tenantId, Map<String, Object> variableMap) {
                                         engine.getRuntimeService().signalEventReceived(signalName);
 
@@ -45,7 +41,7 @@ class ReplaceSignalMethodsTest implements RewriteTest {
 
                                         engine.getRuntimeService().signalEventReceived(signalName, executionId, variableMap);
 
-                                        runtimeService.createSignalEvent(signalName)
+                                        engine.getRuntimeService().createSignalEvent(signalName)
                                                 .send();
 
                                         engine.getRuntimeService().createSignalEvent(signalName)
@@ -132,7 +128,6 @@ class ReplaceSignalMethodsTest implements RewriteTest {
                                 package org.camunda.community.migration.example;
 
                                 import org.camunda.bpm.engine.ProcessEngine;
-                                import org.camunda.bpm.engine.RuntimeService;
                                 import io.camunda.client.CamundaClient;
                                 import org.springframework.beans.factory.annotation.Autowired;
                                 import org.springframework.stereotype.Component;
@@ -147,9 +142,6 @@ class ReplaceSignalMethodsTest implements RewriteTest {
 
                                     @Autowired
                                     private ProcessEngine engine;
-
-                                    @Autowired
-                                    private RuntimeService runtimeService;
 
                                     public void broadcastSignalMethods(String signalName, String executionId, String tenantId, Map<String, Object> variableMap) {
                                         camundaClient

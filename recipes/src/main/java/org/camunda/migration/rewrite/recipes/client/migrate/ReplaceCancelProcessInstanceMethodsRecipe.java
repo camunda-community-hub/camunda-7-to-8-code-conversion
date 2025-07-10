@@ -1,19 +1,21 @@
 package org.camunda.migration.rewrite.recipes.client.migrate;
 
-import java.util.Collections;
-import java.util.List;
-import org.camunda.migration.rewrite.recipes.sharedRecipes.AbstractMigrationRecipe;
+import org.camunda.migration.rewrite.recipes.utils.CamundaClientCodes;
 import org.camunda.migration.rewrite.recipes.utils.RecipeConstants;
 import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
 import org.openrewrite.*;
+import org.openrewrite.java.JavaTemplate;
+import org.openrewrite.java.JavaVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.search.UsesType;
+import org.openrewrite.java.tree.J;
 
-public class ReplaceCancelProcessInstanceMethodsRecipe extends AbstractMigrationRecipe {
+public class ReplaceCancelProcessInstanceMethodsRecipe extends Recipe {
 
   /** Instantiates a new instance. */
-  public ReplaceCancelProcessInstanceMethodsRecipe() {}
+  public ReplaceCancelProcessInstanceMethodsRecipe() {
+  }
 
   @Override
   public String getDisplayName() {
@@ -25,43 +27,61 @@ public class ReplaceCancelProcessInstanceMethodsRecipe extends AbstractMigration
     return "Replaces Camunda 7 cancel process instance methods with Camunda 8 client.";
   }
 
+
   @Override
-  protected TreeVisitor<?, ExecutionContext> preconditions() {
-    return Preconditions.and(
-        Preconditions.or(
+  public TreeVisitor<?, ExecutionContext> getVisitor() {
+
+    // define preconditions
+    TreeVisitor<?, ExecutionContext> check =
+        Preconditions.and(
             new UsesType<>(RecipeConstants.Type.PROCESS_ENGINE, true),
-            new UsesType<>(RecipeConstants.Type.RUNTIME_SERVICE, true)),
-        new UsesMethod<>(RecipeConstants.Method.DELETE_PROCESS_INSTANCE, true));
-  }
+            new UsesMethod<>(RecipeConstants.Method.GET_RUNTIME_SERVICE, true),
+            new UsesMethod<>(RecipeConstants.Method.DELETE_PROCESS_INSTANCE, true));
 
-  @Override
-  protected List<RecipeUtils.MethodInvocationSimpleReplacementSpec> simpleMethodInvocations() {
-    return List.of(
-        new RecipeUtils.MethodInvocationSimpleReplacementSpec(
-            new MethodMatcher(
-                // "signalEventReceived(String signalName)"
-                "org.camunda.bpm.engine.RuntimeService deleteProcessInstance(java.lang.String, java.lang.String)"),
-            RecipeUtils.createSimpleJavaTemplate(
-                """
-                                #{camundaClient:any(io.camunda.client.CamundaClient)}
-                                    .newCancelInstanceCommand(Long.valueOf(#{processInstanceKey:any(String)}))
-                                    .send()
-                                    .join();
-                                """),
-            null,
-            List.of(
-                new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
-                    "processInstanceKey", 0)),
-            List.of(" delete reason was removed")));
-  }
+    return Preconditions.check(
+        check,
+        new JavaVisitor<ExecutionContext>() {
 
-  @Override
-  protected List<RecipeUtils.MethodInvocationBuilderReplacementSpec> builderMethodInvocations() {
-    return Collections.emptyList();
-  }
+          // method to be replaced
+          final MethodMatcher engineDeleteProcessInstance =
+              new MethodMatcher(RecipeConstants.Method.DELETE_PROCESS_INSTANCE);
 
-  @Override
-  protected List<RecipeUtils.MethodInvocationReturnReplacementSpec> returnMethodInvocations() {
-    return Collections.emptyList();
+          /*
+           * This java template uses the camunda client wrapper to replace the above method. The
+           * processInstanceId is expected to be a string. If any method returns a processInstanceId
+           * elsewhere, it will also be cast to a string.
+           */
+            final JavaTemplate clientCancelProcessInstance =
+                    RecipeUtils.createSimpleJavaTemplate(
+                            CamundaClientCodes.CANCEL_PROCESS_INSTANCE);
+
+          /**
+           * One method is replaced with another method, thus visiting J.MethodInvocations works.
+           * The base identifier of the method invocation changes from engine.getRuntimeService to
+           * the camundaClientWrapper. This new identifier needs to be constructed manually,
+           * providing simple name and java type.
+           */
+          @Override
+          public J visitMethodInvocation(J.MethodInvocation methodInv, ExecutionContext ctx) {
+
+            // create new identifier for first java template argument
+            J.Identifier camundaClient =
+                RecipeUtils.createSimpleIdentifier("camundaClient", RecipeConstants.Type.CAMUNDA_CLIENT);
+
+            /*
+             * if methodInv matches the defined method, replace it with the applied java template,
+             * else resume tree traversal
+             */
+            if (engineDeleteProcessInstance.matches(methodInv)) {
+              return clientCancelProcessInstance
+                  .apply(
+                      getCursor(),
+                      methodInv.getCoordinates().replace(),
+                      camundaClient,
+                      methodInv.getArguments().get(0));
+            }
+            return super.visitMethodInvocation(methodInv, ctx);
+          }
+        });
   }
 }

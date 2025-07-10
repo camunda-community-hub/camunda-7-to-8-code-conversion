@@ -150,14 +150,8 @@ public class ReplaceExecutionRecipe extends Recipe {
             final MethodMatcher engineGetVariable =
                 new MethodMatcher(RecipeConstants.Method.GET_VARIABLE);
 
-            final MethodMatcher engineGetVariableLocal =
-                new MethodMatcher(RecipeConstants.Method.GET_VARIABLE_LOCAL);
-
             final MethodMatcher engineSetVariable =
                 new MethodMatcher(RecipeConstants.Method.SET_VARIABLE);
-
-            final MethodMatcher engineSetVariableLocal =
-                new MethodMatcher(RecipeConstants.Method.SET_VARIABLE_LOCAL);
 
             @Override
             public J visitMethodInvocation(
@@ -168,12 +162,10 @@ public class ReplaceExecutionRecipe extends Recipe {
                 return methodInvocation;
               }
 
-              if (engineGetVariable.matches(methodInvocation)
-                  || engineGetVariableLocal.matches(methodInvocation)) {
+              if (engineGetVariable.matches(methodInvocation)) {
                 return transformGetVariableCall(getCursor(), methodInvocation);
               }
-              if (engineSetVariable.matches(methodInvocation)
-                  || engineSetVariableLocal.matches(methodInvocation)) {
+              if (engineSetVariable.matches(methodInvocation)) {
                 return transformSetVariableCall(getCursor(), methodInvocation);
               }
               return super.visitMethodInvocation(methodInvocation, ctx);
@@ -219,7 +211,7 @@ public class ReplaceExecutionRecipe extends Recipe {
                 JavaTemplate.builder(
                         "#{job:any("
                             + RecipeConstants.Type.ACTIVATED_JOB
-                            + ")}.getVariable(#{any(java.lang.String)})")
+                            + ")}.getVariablesAsMap().get(#{any(java.lang.String)})")
                     .javaParser(
                         JavaParser.fromJavaVersion().classpath(JavaParser.runtimeClasspath()))
                     .imports(RecipeConstants.Type.ACTIVATED_JOB)

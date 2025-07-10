@@ -8,6 +8,7 @@ recipeList:
       artifactId: spring-boot-starter-camunda-sdk
       version: 8.8.0-alpha4.1
   - org.camunda.migration.rewrite.recipes.sharedRecipes.ReplaceTypedValueAPIRecipe
+  - org.camunda.migration.rewrite.recipes.delegate.prepare.DelegateReplaceTypedValueAPIRecipe
   - org.camunda.migration.rewrite.recipes.delegate.prepare.InjectJobWorkerRecipe
 ---
 type: specs.openrewrite.org/v1beta/recipe
@@ -24,7 +25,7 @@ description: Removes delegate code and unused imports.
 recipeList:
   - org.camunda.migration.rewrite.recipes.delegate.cleanup.RemoveDelegateRecipe
   - org.openrewrite.java.RemoveUnusedImports
-#  - org.camunda.migration.rewrite.recipes.sharedRecipes.RemoveSharedImportsManuallyRecipe
+  - org.camunda.migration.rewrite.recipes.sharedRecipes.RemoveSharedImportsManuallyRecipe
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: org.camunda.migration.rewrite.recipes.AllDelegateRecipes

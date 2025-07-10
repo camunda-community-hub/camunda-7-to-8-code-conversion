@@ -1,5 +1,6 @@
 package org.camunda.migration.rewrite.recipes.client.migrate;
 
+import org.camunda.migration.rewrite.recipes.client.migrate.ReplaceCancelProcessInstanceMethodsRecipe;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RewriteTest;
 
@@ -53,7 +54,6 @@ class ReplaceCancelProcessInstanceMethodsTest implements RewriteTest {
                                     private CamundaClient camundaClient;
 
                                     public void cancelProcessInstance(String processInstanceId, String deleteReason) {
-                                        // delete reason was removed
                                         camundaClient
                                                 .newCancelInstanceCommand(Long.valueOf(processInstanceId))
                                                 .send()
