@@ -37,6 +37,7 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
             new UsesType<>(RecipeConstants.Type.VARIABLES, true),
             new UsesType<>(RecipeConstants.Type.VARIABLE_MAP, true),
             new UsesType<>(RecipeConstants.Type.TYPED_VALUE, true),
+            new UsesType<>(RecipeConstants.Type.BOOLEAN_VALUE, true),
             new UsesType<>(RecipeConstants.Type.OBJECT_VALUE, true),
             new UsesType<>(RecipeConstants.Type.STRING_VALUE, true),
             new UsesType<>(RecipeConstants.Type.INTEGER_VALUE, true),
@@ -57,21 +58,25 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
               simpleMethodInvocations =
                   List.of(
                       new RecipeUtils.MethodInvocationSimpleReplacementSpec(
-                          new MethodMatcher(
+                              new MethodMatcher(
                               // "booleanValue(Boolean bool)"
                               "org.camunda.bpm.engine.variable.Variables booleanValue(..)"),
-                          RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Boolean)}"),
-                          "java.lang.Boolean",
-                          List.of(
+                              RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Boolean)}"),
+                              null,
+                              "java.lang.Boolean",
+                              RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
+                              List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "booleanValue", 0)),
-                          Collections.emptyList()),
+                              Collections.emptyList()),
                       new RecipeUtils.MethodInvocationSimpleReplacementSpec(
                           new MethodMatcher(
                               // "stringValue(String string)"
                               "org.camunda.bpm.engine.variable.Variables stringValue(..)"),
                           RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Boolean)}"),
+                          null,
                           "java.lang.String",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "stringValue", 0)),
@@ -81,7 +86,9 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                               // "integerValue(Integer integer)"
                               "org.camunda.bpm.engine.variable.Variables integerValue(..)"),
                           RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Integer)}"),
+                          null,
                           "java.lang.Integer",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "integerValue", 0)),
@@ -91,7 +98,9 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                               // "longValue(Long long)"
                               "org.camunda.bpm.engine.variable.Variables longValue(..)"),
                           RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Long)}"),
+                          null,
                           "java.lang.Long",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "longValue", 0)),
@@ -101,7 +110,9 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                               // "shortValue(Short short)"
                               "org.camunda.bpm.engine.variable.Variables shortValue(..)"),
                           RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Short)}"),
+                          null,
                           "java.lang.Short",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "shortValue", 0)),
@@ -111,7 +122,9 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                               // "doubleValue(Double double)"
                               "org.camunda.bpm.engine.variable.Variables doubleValue(..)"),
                           RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Double)}"),
+                          null,
                           "java.lang.Double",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "doubleValue", 0)),
@@ -121,7 +134,9 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                               // "floatValue(Float float)"
                               "org.camunda.bpm.engine.variable.Variables floatValue(..)"),
                           RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Float)}"),
+                          null,
                           "java.lang.Float",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "floatValue", 0)),
@@ -131,7 +146,9 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                               // "byteArrayValue(java.lang.Byte[] bytes)"
                               "org.camunda.bpm.engine.variable.Variables byteArrayValue(..)"),
                           RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Byte[])}"),
+                          null,
                           "java.lang.Byte[]",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "byteArrayValue", 0)),
@@ -141,7 +158,9 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                               // "fromMap(java.util.Map map)"
                               "org.camunda.bpm.engine.variable.Variables fromMap(..)"),
                           RecipeUtils.createSimpleJavaTemplate("#{any(java.lang.Map)}"),
+                          null,
                           "java.util.Map<String, Object>",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(
                               new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                                   "fromMap", 0)),
@@ -156,7 +175,9 @@ public class ReplaceTypedValueAPIRecipe extends Recipe {
                           Set.of("objectValue"),
                           List.of("objectValue"),
                           RecipeUtils.createSimpleJavaTemplate("#{any()}"),
+                          null,
                           "java.lang.Object",
+                          RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                           List.of(" type set to java.lang.Object")));
 
           // join specs - possible because we don't touch the method invocations

@@ -297,10 +297,3 @@ public class TestDelegate {
 """));
     }
 }
-
-/*
-final String procInstanceId = String.valueOf(job.getProcessInstanceKey());
-        final String procDefId = String.valueOf(job.getProcessDefinitionKey());
-        final String curActId = job.getElementId();
-        final String actInstanceId = String.valueOf(job.getElementInstanceKey());
- */

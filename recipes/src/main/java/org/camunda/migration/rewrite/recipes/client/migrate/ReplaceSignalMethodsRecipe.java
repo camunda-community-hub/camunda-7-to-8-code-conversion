@@ -51,7 +51,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                         .send()
                                         .join();
                                     """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             List.of(
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("signalName", 0)),
             Collections.emptyList()),
@@ -67,7 +69,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                         .send()
                                         .join();
                                     """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             List.of(
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("signalName", 0)),
             List.of(" executionId was removed")),
@@ -84,7 +88,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                             .send()
                             .join();
                         """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             List.of(
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("signalName", 0),
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("variableMap", 1)),
@@ -103,7 +109,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             List.of(
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("signalName", 0),
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("variableMap", 2)),
@@ -128,7 +136,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             Collections.emptyList()),
         new RecipeUtils.MethodInvocationBuilderReplacementSpec(
             executeMethodMatcher,
@@ -142,7 +152,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             List.of(" executionId was removed")),
         new RecipeUtils.MethodInvocationBuilderReplacementSpec(
             executeMethodMatcher,
@@ -157,7 +169,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             Collections.emptyList()),
         new RecipeUtils.MethodInvocationBuilderReplacementSpec(
             executeMethodMatcher,
@@ -172,7 +186,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             List.of(" executionId was removed")),
         new RecipeUtils.MethodInvocationBuilderReplacementSpec(
             executeMethodMatcher,
@@ -187,7 +203,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             Collections.emptyList()),
         new RecipeUtils.MethodInvocationBuilderReplacementSpec(
             executeMethodMatcher,
@@ -202,7 +220,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             List.of(" executionId was removed")),
         new RecipeUtils.MethodInvocationBuilderReplacementSpec(
             executeMethodMatcher,
@@ -218,7 +238,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             Collections.emptyList()),
         new RecipeUtils.MethodInvocationBuilderReplacementSpec(
             executeMethodMatcher,
@@ -234,7 +256,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                                     .send()
                                     .join();
                                 """),
-            null,
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            "io.camunda.client.api.response.BroadcastSignalResponse",
+            RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
             List.of(" executionId was removed")));
   }
 
