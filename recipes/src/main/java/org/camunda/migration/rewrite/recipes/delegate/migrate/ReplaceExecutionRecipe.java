@@ -32,7 +32,7 @@ public class ReplaceExecutionRecipe extends Recipe {
   public List<Recipe> getRecipeList() {
     return List.of(
         new CopyDelegateToJobWorkerRecipe(),
-        new MigrateDelegateVariableHandlingInJobWorker(),
+        new MigrateDelegateExecutionMethodsInJobWorker(),
         new MigrateDelegateBPMNErrorAndExceptionInJobWorker());
   }
 
@@ -120,7 +120,7 @@ public class ReplaceExecutionRecipe extends Recipe {
     }
   }
 
-  private static class MigrateDelegateVariableHandlingInJobWorker extends AbstractMigrationRecipe {
+  private static class MigrateDelegateExecutionMethodsInJobWorker extends AbstractMigrationRecipe {
 
     @Override
     public String getDisplayName() {
@@ -203,8 +203,71 @@ public class ReplaceExecutionRecipe extends Recipe {
               List.of(
                   new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("variableName", 0),
                   new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("value", 1)),
+              Collections.emptyList()),
+          new RecipeUtils.MethodInvocationSimpleReplacementSpec(
+              new MethodMatcher(
+                  // "getProcessInstanceId()"
+                  "org.camunda.bpm.engine.delegate.DelegateExecution getProcessInstanceId()"),
+              RecipeUtils.createSimpleJavaTemplate(
+                  "String.valueOf(#{any(io.camunda.client.api.response.ActivatedJob)}.getProcessInstanceKey())"),
+              RecipeUtils.createSimpleIdentifier(
+                  "job", "io.camunda.client.api.response.ActivatedJob"),
+              "java.lang.String",
+              RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
+              Collections.emptyList(),
+              Collections.emptyList()),
+          new RecipeUtils.MethodInvocationSimpleReplacementSpec(
+              new MethodMatcher(
+                  // "getProcessDefinitionId()"
+                  "org.camunda.bpm.engine.delegate.DelegateExecution getProcessDefinitionId()"),
+              RecipeUtils.createSimpleJavaTemplate(
+                  "String.valueOf(#{any(io.camunda.client.api.response.ActivatedJob)}.getProcessDefinitionKey())"),
+              RecipeUtils.createSimpleIdentifier(
+                  "job", "io.camunda.client.api.response.ActivatedJob"),
+              "java.lang.String",
+              RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
+              Collections.emptyList(),
+              Collections.emptyList()),
+          new RecipeUtils.MethodInvocationSimpleReplacementSpec(
+              new MethodMatcher(
+                  // "getCurrentActivityId()"
+                  "org.camunda.bpm.engine.delegate.DelegateExecution getCurrentActivityId()"),
+              RecipeUtils.createSimpleJavaTemplate(
+                  "#{any(io.camunda.client.api.response.ActivatedJob)}.getElementId()"),
+              RecipeUtils.createSimpleIdentifier(
+                  "job", "io.camunda.client.api.response.ActivatedJob"),
+              "java.lang.String",
+              RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
+              Collections.emptyList(),
+              Collections.emptyList()),
+          new RecipeUtils.MethodInvocationSimpleReplacementSpec(
+              new MethodMatcher(
+                  // "getActivityInstanceId()"
+                  "org.camunda.bpm.engine.delegate.DelegateExecution getActivityInstanceId()"),
+              RecipeUtils.createSimpleJavaTemplate(
+                  "String.valueOf(#{any(io.camunda.client.api.response.ActivatedJob)}.getElementInstanceKey())"),
+              RecipeUtils.createSimpleIdentifier(
+                  "job", "io.camunda.client.api.response.ActivatedJob"),
+              "java.lang.String",
+              RecipeUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
+              Collections.emptyList(),
               Collections.emptyList()));
     }
+
+    /*
+           // TODO:
+       // final String procInstanceId = execution.getProcessInstanceId();
+       // final String procDefId = execution.getProcessDefinitionId();
+       // final String curActId = execution.getCurrentActivityId();
+       // final String actInstanceId = execution.getActivityInstanceId();
+    */
+
+    /*
+    final String procInstanceId = String.valueOf(job.getProcessInstanceKey());
+            final String procDefId = String.valueOf(job.getProcessDefinitionKey());
+            final String curActId = job.getElementId();
+            final String actInstanceId = String.valueOf(job.getElementInstanceKey());
+     */
 
     @Override
     protected List<RecipeUtils.MethodInvocationBuilderReplacementSpec> builderMethodInvocations() {
