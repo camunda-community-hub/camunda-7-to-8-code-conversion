@@ -1,6 +1,6 @@
 # Expression &#8594; Job Worker (Spring)
 
-In Camunda 7, you can use arbritrary expression in JUEL, the Java Unififed Expression Language. Those expressions might access the Spring context as well as Camunda's context.
+In Camunda 7, you can use arbitrary expression in JUEL, the Java Unified Expression Language. Those expressions might access the Spring context as well as Camunda's context.
 
 JUEL is not supported in Camunda 8. And more importantly, Camunda cannot directly evaluate any expressions that might include your own applications context, like its Spring beans.
 
