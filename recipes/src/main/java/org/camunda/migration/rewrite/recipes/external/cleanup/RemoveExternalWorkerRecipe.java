@@ -73,7 +73,6 @@ public class RemoveExternalWorkerRecipe extends Recipe {
             maybeRemoveImport("org.camunda.bpm.client.task.ExternalTask");
             maybeRemoveImport("org.camunda.bpm.client.task.ExternalTaskService");
             maybeRemoveImport("org.camunda.bpm.client.task.ExternalTaskHandler");
-            maybeRemoveImport("org.camunda.bpm.client.task.ExternalTaskHandler");
             maybeRemoveImport("org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription");
 
             return classDecl
