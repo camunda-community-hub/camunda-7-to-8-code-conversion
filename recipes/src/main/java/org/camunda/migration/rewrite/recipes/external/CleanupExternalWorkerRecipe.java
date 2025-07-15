@@ -1,4 +1,4 @@
-package org.camunda.migration.rewrite.recipes.external.cleanup;
+package org.camunda.migration.rewrite.recipes.external;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,10 +8,10 @@ import org.openrewrite.java.search.UsesType;
 import org.openrewrite.java.tree.*;
 import org.openrewrite.jgit.annotations.NonNull;
 
-public class RemoveExternalWorkerRecipe extends Recipe {
+public class CleanupExternalWorkerRecipe extends Recipe {
 
   /** Instantiates a new instance. */
-  public RemoveExternalWorkerRecipe() {}
+  public CleanupExternalWorkerRecipe() {}
 
   @Override
   public String getDisplayName() {
