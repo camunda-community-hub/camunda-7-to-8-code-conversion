@@ -45,7 +45,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
 
     return Preconditions.check(
         preconditions(),
-        new JavaIsoVisitor<ExecutionContext>() {
+        new JavaIsoVisitor<>() {
 
           // join specs - possible because we don't touch the method invocations
           final List<RecipeUtils.MethodInvocationReplacementSpec> commonSpecs =
@@ -179,7 +179,8 @@ public abstract class AbstractMigrationRecipe extends Recipe {
               if (spec.matcher().matches(invocation)) {
 
                 // nothing to do if type stays the same
-                if(spec.returnTypeStrategy() == RecipeUtils.ReturnTypeStrategy.INFER_FROM_CONTEXT) {
+                if (spec.returnTypeStrategy()
+                    == RecipeUtils.ReturnTypeStrategy.INFER_FROM_CONTEXT) {
                   return super.visitAssignment(assignment, ctx);
                 }
 

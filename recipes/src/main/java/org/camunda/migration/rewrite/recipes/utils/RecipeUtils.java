@@ -109,8 +109,14 @@ public class RecipeUtils {
       throw new IllegalArgumentException("Unsupported type: " + tree.getClass());
     }
 
-    return prependBaseIdentifier(
-        baseIdentifier, argumentIndexes.stream().map(i -> args.get(i.index())).toArray());
+    Object[] selectedArgs = argumentIndexes.stream().map(i -> args.get(i.index())).toArray();
+
+    if (baseIdentifier != null) {
+
+      return prependBaseIdentifier(baseIdentifier, selectedArgs);
+    } else {
+      return selectedArgs;
+    }
   }
 
   public static Object[] prependBaseIdentifier(J.Identifier baseIdentifier, Object[] rest) {
@@ -138,7 +144,10 @@ public class RecipeUtils {
                                     new TextComment(
                                         false,
                                         text,
-                                        "\n" + expression.getPrefix().getIndent(),
+                                        "\n"
+                                            + (expression.getPrefix() != null
+                                                ? expression.getPrefix().getIndent()
+                                                : ""),
                                         Markers.EMPTY)))
                 .toList());
     // .withPrefix(expression.getPrefix());

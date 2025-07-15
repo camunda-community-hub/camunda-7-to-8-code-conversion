@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.camunda.migration.rewrite.recipes.sharedRecipes.AbstractMigrationRecipe;
-import org.camunda.migration.rewrite.recipes.utils.RecipeConstants;
 import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
 import org.openrewrite.*;
 import org.openrewrite.java.*;
@@ -57,21 +56,22 @@ public class ReplaceExecutionRecipe extends Recipe {
       // define preconditions
       TreeVisitor<?, ExecutionContext> check =
           Preconditions.and(
-              new UsesType<>(RecipeConstants.Type.JOB_WORKER, true),
-              new UsesType<>(RecipeConstants.Type.VARIABLE_SCOPE, true));
+              new UsesType<>("io.camunda.spring.client.annotation.JobWorker", true),
+              new UsesType<>("org.camunda.bpm.engine.delegate.JavaDelegate", true));
 
       return Preconditions.check(
           check,
-          new JavaVisitor<ExecutionContext>() {
+          new JavaIsoVisitor<>() {
 
             @Override
-            public J visitClassDeclaration(J.ClassDeclaration classDecl, ExecutionContext ctx) {
+            public J.ClassDeclaration visitClassDeclaration(
+                J.ClassDeclaration classDeclaration, ExecutionContext ctx) {
               // Skip interfaces
-              if (classDecl.getKind() != J.ClassDeclaration.Kind.Type.Class) {
-                return super.visitClassDeclaration(classDecl, ctx);
+              if (classDeclaration.getKind() != J.ClassDeclaration.Kind.Type.Class) {
+                return super.visitClassDeclaration(classDeclaration, ctx);
               }
 
-              List<Statement> currentStatements = classDecl.getBody().getStatements();
+              List<Statement> currentStatements = classDeclaration.getBody().getStatements();
               List<Statement> updatedStatements = new ArrayList<>();
 
               // find delegate method
@@ -112,9 +112,10 @@ public class ReplaceExecutionRecipe extends Recipe {
                     updatedStatements.add(stmt);
                   }
                 }
-                return classDecl.withBody(classDecl.getBody().withStatements(updatedStatements));
+                return classDeclaration.withBody(
+                    classDeclaration.getBody().withStatements(updatedStatements));
               }
-              return super.visitClassDeclaration(classDecl, ctx);
+              return super.visitClassDeclaration(classDeclaration, ctx);
             }
           });
     }
@@ -135,8 +136,8 @@ public class ReplaceExecutionRecipe extends Recipe {
     @Override
     protected TreeVisitor<?, ExecutionContext> preconditions() {
       return Preconditions.and(
-          new UsesType<>(RecipeConstants.Type.JOB_WORKER, true),
-          new UsesType<>(RecipeConstants.Type.DELEGATE_EXECUTION, true));
+          new UsesType<>("io.camunda.spring.client.annotation.JobWorker", true),
+          new UsesType<>("org.camunda.bpm.engine.delegate.JavaDelegate", true));
     }
 
     @Override
@@ -253,21 +254,6 @@ public class ReplaceExecutionRecipe extends Recipe {
               Collections.emptyList(),
               Collections.emptyList()));
     }
-
-    /*
-           // TODO:
-       // final String procInstanceId = execution.getProcessInstanceId();
-       // final String procDefId = execution.getProcessDefinitionId();
-       // final String curActId = execution.getCurrentActivityId();
-       // final String actInstanceId = execution.getActivityInstanceId();
-    */
-
-    /*
-    final String procInstanceId = String.valueOf(job.getProcessInstanceKey());
-            final String procDefId = String.valueOf(job.getProcessDefinitionKey());
-            final String curActId = job.getElementId();
-            final String actInstanceId = String.valueOf(job.getElementInstanceKey());
-     */
 
     @Override
     protected List<RecipeUtils.MethodInvocationBuilderReplacementSpec> builderMethodInvocations() {
@@ -488,8 +474,8 @@ public class ReplaceExecutionRecipe extends Recipe {
       // define preconditions
       TreeVisitor<?, ExecutionContext> check =
           Preconditions.and(
-              new UsesType<>(RecipeConstants.Type.JOB_WORKER, true),
-              new UsesType<>(RecipeConstants.Type.VARIABLE_SCOPE, true));
+              new UsesType<>("io.camunda.spring.client.annotation.JobWorker", true),
+              new UsesType<>("org.camunda.bpm.engine.delegate.JavaDelegate", true));
 
       return Preconditions.check(
           check,

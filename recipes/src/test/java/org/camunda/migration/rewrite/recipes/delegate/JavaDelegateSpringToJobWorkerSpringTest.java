@@ -7,7 +7,7 @@ import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.java.Assertions.java;
 
-class JavaDelegateSpringToZeebeWorkerSpringTest implements RewriteTest {
+class JavaDelegateSpringToJobWorkerSpringTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {

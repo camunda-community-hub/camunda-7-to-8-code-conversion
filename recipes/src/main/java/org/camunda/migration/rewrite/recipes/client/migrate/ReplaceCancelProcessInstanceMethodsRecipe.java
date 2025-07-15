@@ -34,23 +34,23 @@ public class ReplaceCancelProcessInstanceMethodsRecipe extends AbstractMigration
   protected List<RecipeUtils.MethodInvocationSimpleReplacementSpec> simpleMethodInvocations() {
     return List.of(
         new RecipeUtils.MethodInvocationSimpleReplacementSpec(
-                new MethodMatcher(
-                // "signalEventReceived(String signalName)"
+            // "signalEventReceived(String signalName)"
+            new MethodMatcher(
                 "org.camunda.bpm.engine.RuntimeService deleteProcessInstance(java.lang.String, java.lang.String)"),
-                RecipeUtils.createSimpleJavaTemplate(
+            RecipeUtils.createSimpleJavaTemplate(
                 """
                 #{camundaClient:any(io.camunda.client.CamundaClient)}
                     .newCancelInstanceCommand(Long.valueOf(#{processInstanceKey:any(String)}))
                     .send()
                     .join();
                 """),
-                RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
-                null,
-                RecipeUtils.ReturnTypeStrategy.VOID,
-                List.of(
+            RecipeUtils.createSimpleIdentifier("camundaClient", "io.camunda.client.CamundaClient"),
+            null,
+            RecipeUtils.ReturnTypeStrategy.VOID,
+            List.of(
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                     "processInstanceKey", 0)),
-                List.of(" delete reason was removed")));
+            List.of(" delete reason was removed")));
   }
 
   @Override

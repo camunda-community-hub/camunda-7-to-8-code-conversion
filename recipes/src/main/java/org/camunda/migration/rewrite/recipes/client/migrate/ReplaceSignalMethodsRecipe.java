@@ -4,12 +4,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.camunda.migration.rewrite.recipes.sharedRecipes.AbstractMigrationRecipe;
-import org.camunda.migration.rewrite.recipes.utils.RecipeConstants;
 import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
 import org.openrewrite.*;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
-import org.openrewrite.java.search.UsesType;
 
 public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
 
@@ -25,23 +23,18 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
 
   @Override
   protected TreeVisitor<?, ExecutionContext> preconditions() {
-    return Preconditions.and(
-        Preconditions.or(
-            new UsesType<>(RecipeConstants.Type.PROCESS_ENGINE, true),
-            new UsesType<>(RecipeConstants.Type.RUNTIME_SERVICE, true)),
-        Preconditions.or(
-            new UsesMethod<>(
-                RecipeConstants.Method.SIGNAL_EVENT_RECEIVED + RecipeConstants.Parameters.ANY,
-                true),
-            new UsesMethod<>(RecipeConstants.Method.CREATE_SIGNAL_EVENT, true)));
+    return Preconditions.or(
+        new UsesMethod<>("org.camunda.bpm.engine.RuntimeService signalEventReceived(..)", true),
+        new UsesMethod<>(
+            "org.camunda.bpm.engine.RuntimeService createSignalEvent(java.lang.String)", true));
   }
 
   @Override
   protected List<RecipeUtils.MethodInvocationSimpleReplacementSpec> simpleMethodInvocations() {
     return List.of(
         new RecipeUtils.MethodInvocationSimpleReplacementSpec(
-            new MethodMatcher(
                 // "signalEventReceived(String signalName)"
+            new MethodMatcher(
                 "org.camunda.bpm.engine.RuntimeService signalEventReceived(java.lang.String)"),
             RecipeUtils.createSimpleJavaTemplate(
                 """
@@ -58,8 +51,8 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("signalName", 0)),
             Collections.emptyList()),
         new RecipeUtils.MethodInvocationSimpleReplacementSpec(
-            new MethodMatcher(
                 // "signalEventReceived(String signalName, String executionId)"
+            new MethodMatcher(
                 "org.camunda.bpm.engine.RuntimeService signalEventReceived(java.lang.String, java.lang.String)"),
             RecipeUtils.createSimpleJavaTemplate(
                 """
@@ -76,8 +69,8 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("signalName", 0)),
             List.of(" executionId was removed")),
         new RecipeUtils.MethodInvocationSimpleReplacementSpec(
-            new MethodMatcher(
                 // "signalEventReceived(String signalName, Map<String, Object> variableMap)"
+            new MethodMatcher(
                 "org.camunda.bpm.engine.RuntimeService signalEventReceived(java.lang.String, java.util.Map)"),
             RecipeUtils.createSimpleJavaTemplate(
                 """
@@ -96,9 +89,9 @@ public class ReplaceSignalMethodsRecipe extends AbstractMigrationRecipe {
                 new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("variableMap", 1)),
             Collections.emptyList()),
         new RecipeUtils.MethodInvocationSimpleReplacementSpec(
-            new MethodMatcher(
                 // "signalEventReceived(String signalName, String executionId, Map<String, Object>
                 // variableMap)"
+            new MethodMatcher(
                 "org.camunda.bpm.engine.RuntimeService signalEventReceived(java.lang.String, java.lang.String, java.util.Map)"),
             RecipeUtils.createSimpleJavaTemplate(
                 """

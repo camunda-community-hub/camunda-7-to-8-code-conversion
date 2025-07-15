@@ -2,12 +2,10 @@ package org.camunda.migration.rewrite.recipes.client.migrate;
 
 import java.util.*;
 import org.camunda.migration.rewrite.recipes.sharedRecipes.AbstractMigrationRecipe;
-import org.camunda.migration.rewrite.recipes.utils.RecipeConstants;
 import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
 import org.openrewrite.*;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
-import org.openrewrite.java.search.UsesType;
 
 public class ReplaceStartProcessInstanceMethodsRecipe extends AbstractMigrationRecipe {
 
@@ -23,29 +21,22 @@ public class ReplaceStartProcessInstanceMethodsRecipe extends AbstractMigrationR
 
   @Override
   protected TreeVisitor<?, ExecutionContext> preconditions() {
-    return Preconditions.and(
-        Preconditions.or(
-            new UsesType<>(RecipeConstants.Type.PROCESS_ENGINE, true),
-            new UsesType<>(RecipeConstants.Type.RUNTIME_SERVICE, true)),
-        Preconditions.or(
-            new UsesMethod<>(
-                RecipeConstants.Method.START_PROCESS_INSTANCE_BY_KEY
-                    + RecipeConstants.Parameters.ANY,
-                true),
-            new UsesMethod<>(RecipeConstants.Method.CREATE_PROCESS_INSTANCE_BY_KEY, true),
-            new UsesMethod<>(
-                RecipeConstants.Method.START_PROCESS_INSTANCE_BY_ID
-                    + RecipeConstants.Parameters.ANY,
-                true),
-            new UsesMethod<>(RecipeConstants.Method.CREATE_PROCESS_INSTANCE_BY_ID, true),
-            new UsesMethod<>(
-                RecipeConstants.Method.START_PROCESS_INSTANCE_BY_MESSAGE
-                    + RecipeConstants.Parameters.ANY,
-                true),
-            new UsesMethod<>(
-                RecipeConstants.Method.START_PROCESS_INSTANCE_BY_MESSAGE_AND_PROCESS_DEFINITION_ID
-                    + RecipeConstants.Parameters.ANY,
-                true)));
+    return Preconditions.or(
+        new UsesMethod<>(
+            "org.camunda.bpm.engine.RuntimeService startProcessInstanceByKey(..)", true),
+        new UsesMethod<>(
+            "org.camunda.bpm.engine.RuntimeService createProcessInstanceByKey(java.lang.String)",
+            true),
+        new UsesMethod<>(
+            "org.camunda.bpm.engine.RuntimeService startProcessInstanceById(..)", true),
+        new UsesMethod<>(
+            "org.camunda.bpm.engine.RuntimeService createProcessInstanceById(java.lang.String)",
+            true),
+        new UsesMethod<>(
+            "org.camunda.bpm.engine.RuntimeService startProcessInstanceByMessage(..)", true),
+        new UsesMethod<>(
+            "org.camunda.bpm.engine.RuntimeService startProcessInstanceByMessageAndProcessDefinitionId(..)",
+            true));
   }
 
   @Override
