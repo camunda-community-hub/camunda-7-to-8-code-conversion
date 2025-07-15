@@ -34,7 +34,7 @@ public class CleanupExternalWorkerRecipe extends Recipe {
         check,
         new JavaIsoVisitor<>() {
 
-          AnnotationMatcher subscription =
+          final AnnotationMatcher subscription =
               new AnnotationMatcher(
                   "@org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription");
 
@@ -72,7 +72,6 @@ public class CleanupExternalWorkerRecipe extends Recipe {
 
             maybeRemoveImport("org.camunda.bpm.client.task.ExternalTask");
             maybeRemoveImport("org.camunda.bpm.client.task.ExternalTaskService");
-            maybeRemoveImport("org.camunda.bpm.client.task.ExternalTaskHandler");
             maybeRemoveImport("org.camunda.bpm.client.task.ExternalTaskHandler");
             maybeRemoveImport("org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription");
 

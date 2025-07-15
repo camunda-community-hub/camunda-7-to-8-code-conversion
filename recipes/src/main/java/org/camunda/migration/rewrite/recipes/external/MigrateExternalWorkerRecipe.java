@@ -362,7 +362,7 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                     new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 1),
                     new ReplacementUtils.SimpleReplacementSpec.NamedArg(
-                        "variablsMap", 5),
+                        "variableMap", 5),
                     new ReplacementUtils.SimpleReplacementSpec.NamedArg("retries", 3),
                     new ReplacementUtils.SimpleReplacementSpec.NamedArg("duration", 4)),
                 List.of(" error details were removed", " local variables were removed")),
