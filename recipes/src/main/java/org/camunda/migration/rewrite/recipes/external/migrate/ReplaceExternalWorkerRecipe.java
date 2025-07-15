@@ -361,7 +361,7 @@ public class ReplaceExternalWorkerRecipe extends Recipe {
                     new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
                         "errorMessage", 1),
                     new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
-                        "variablsMap", 5),
+                        "variableMap", 5),
                     new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("retries", 3),
                     new RecipeUtils.MethodInvocationSimpleReplacementSpec.NamedArg("duration", 4)),
                 List.of(" error details were removed", " local variables were removed")),
