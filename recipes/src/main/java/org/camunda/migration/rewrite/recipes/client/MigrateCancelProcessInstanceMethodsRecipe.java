@@ -32,9 +32,9 @@ public class MigrateCancelProcessInstanceMethodsRecipe extends AbstractMigration
   }
 
   @Override
-  protected List<ReplacementUtils.MethodInvocationSimpleReplacementSpec> simpleMethodInvocations() {
+  protected List<ReplacementUtils.SimpleReplacementSpec> simpleMethodInvocations() {
     return List.of(
-        new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+        new ReplacementUtils.SimpleReplacementSpec(
             // "signalEventReceived(String signalName)"
             new MethodMatcher(
                 "org.camunda.bpm.engine.RuntimeService deleteProcessInstance(java.lang.String, java.lang.String)"),
@@ -49,18 +49,18 @@ public class MigrateCancelProcessInstanceMethodsRecipe extends AbstractMigration
             null,
             ReplacementUtils.ReturnTypeStrategy.VOID,
             List.of(
-                new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                     "processInstanceKey", 0)),
             List.of(" delete reason was removed")));
   }
 
   @Override
-  protected List<ReplacementUtils.MethodInvocationBuilderReplacementSpec> builderMethodInvocations() {
+  protected List<ReplacementUtils.BuilderReplacementSpec> builderMethodInvocations() {
     return Collections.emptyList();
   }
 
   @Override
-  protected List<ReplacementUtils.MethodInvocationReturnReplacementSpec> returnMethodInvocations() {
+  protected List<ReplacementUtils.ReturnReplacementSpec> returnMethodInvocations() {
     return Collections.emptyList();
   }
 }

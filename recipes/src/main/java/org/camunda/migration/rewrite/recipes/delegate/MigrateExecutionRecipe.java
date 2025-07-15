@@ -150,9 +150,9 @@ public class MigrateExecutionRecipe extends Recipe {
     }
 
     @Override
-    protected List<ReplacementUtils.MethodInvocationSimpleReplacementSpec> simpleMethodInvocations() {
+    protected List<ReplacementUtils.SimpleReplacementSpec> simpleMethodInvocations() {
       return List.of(
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getVariable(String variableName)"
                   "org.camunda.bpm.engine.delegate.VariableScope getVariable(java.lang.String)"),
@@ -163,10 +163,10 @@ public class MigrateExecutionRecipe extends Recipe {
               null,
               ReplacementUtils.ReturnTypeStrategy.INFER_FROM_CONTEXT,
               List.of(
-                  new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                  new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                       "variableName", 0)),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getVariableLocal(String variableName)"
                   "org.camunda.bpm.engine.delegate.VariableScope getVariableLocal(java.lang.String)"),
@@ -177,10 +177,10 @@ public class MigrateExecutionRecipe extends Recipe {
               null,
               ReplacementUtils.ReturnTypeStrategy.INFER_FROM_CONTEXT,
               List.of(
-                  new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                  new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                       "variableName", 0)),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "setVariable(String variableName, Object value)"
                   "org.camunda.bpm.engine.delegate.VariableScope setVariable(java.lang.String, java.lang.Object)"),
@@ -190,10 +190,10 @@ public class MigrateExecutionRecipe extends Recipe {
               null,
               ReplacementUtils.ReturnTypeStrategy.VOID,
               List.of(
-                  new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("variableName", 0),
-                  new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("value", 1)),
+                  new ReplacementUtils.SimpleReplacementSpec.NamedArg("variableName", 0),
+                  new ReplacementUtils.SimpleReplacementSpec.NamedArg("value", 1)),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "setVariableLocal(String variableName, Object value)"
                   "org.camunda.bpm.engine.delegate.VariableScope setVariableLocal(java.lang.String, java.lang.Object)"),
@@ -203,10 +203,10 @@ public class MigrateExecutionRecipe extends Recipe {
               null,
               ReplacementUtils.ReturnTypeStrategy.VOID,
               List.of(
-                  new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("variableName", 0),
-                  new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("value", 1)),
+                  new ReplacementUtils.SimpleReplacementSpec.NamedArg("variableName", 0),
+                  new ReplacementUtils.SimpleReplacementSpec.NamedArg("value", 1)),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getProcessInstanceId()"
                   "org.camunda.bpm.engine.delegate.DelegateExecution getProcessInstanceId()"),
@@ -218,7 +218,7 @@ public class MigrateExecutionRecipe extends Recipe {
               ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
               Collections.emptyList(),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getProcessDefinitionId()"
                   "org.camunda.bpm.engine.delegate.DelegateExecution getProcessDefinitionId()"),
@@ -230,7 +230,7 @@ public class MigrateExecutionRecipe extends Recipe {
               ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
               Collections.emptyList(),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getCurrentActivityId()"
                   "org.camunda.bpm.engine.delegate.DelegateExecution getCurrentActivityId()"),
@@ -242,7 +242,7 @@ public class MigrateExecutionRecipe extends Recipe {
               ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
               Collections.emptyList(),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getActivityInstanceId()"
                   "org.camunda.bpm.engine.delegate.DelegateExecution getActivityInstanceId()"),
@@ -257,12 +257,12 @@ public class MigrateExecutionRecipe extends Recipe {
     }
 
     @Override
-    protected List<ReplacementUtils.MethodInvocationBuilderReplacementSpec> builderMethodInvocations() {
+    protected List<ReplacementUtils.BuilderReplacementSpec> builderMethodInvocations() {
       return Collections.emptyList();
     }
 
     @Override
-    protected List<ReplacementUtils.MethodInvocationReturnReplacementSpec> returnMethodInvocations() {
+    protected List<ReplacementUtils.ReturnReplacementSpec> returnMethodInvocations() {
       return Collections.emptyList();
     }
   }
@@ -282,9 +282,9 @@ public class MigrateExecutionRecipe extends Recipe {
       return "During a previous step, delegate code was copied into the job worker. This recipe migrates BPMN error throwing code.";
     }
 
-    List<ReplacementUtils.MethodInvocationSimpleReplacementSpec> errorSpecs =
+    List<ReplacementUtils.SimpleReplacementSpec> errorSpecs =
         List.of(
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // BpmnError(java.lang.String errorCode)
                 new MethodMatcher(
                     "org.camunda.bpm.engine.delegate.BpmnError <constructor>(java.lang.String)"),
@@ -296,9 +296,9 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("errorCode", 0)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("errorCode", 0)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // BpmnError(java.lang.String errorCode, java.lang.String errorMessage)
                 new MethodMatcher(
                     "org.camunda.bpm.engine.delegate.BpmnError <constructor>(java.lang.String, java.lang.String)"),
@@ -310,11 +310,11 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("errorCode", 0),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("errorCode", 0),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 1)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // BpmnError(java.lang.String errorCode, java.lang.String errorMessage,
                 // java.lang.Throwable throwable)
                 new MethodMatcher(
@@ -328,12 +328,12 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("errorCode", 0),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("errorCode", 0),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 1),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("throwable", 2)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("throwable", 2)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // BpmnError(java.lang.String errorCode, java.lang.Throwable cause)
                 new MethodMatcher(
                     "org.camunda.bpm.engine.delegate.BpmnError <constructor>(java.lang.String, java.lang.Throwable)"),
@@ -346,10 +346,10 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("errorCode", 0),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("throwable", 1)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("errorCode", 0),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("throwable", 1)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // ProcessEngineException()
                 new MethodMatcher("org.camunda.bpm.engine.ProcessEngineException <constructor>()"),
                 RecipeUtils.createSimpleJavaTemplate(
@@ -361,7 +361,7 @@ public class MigrateExecutionRecipe extends Recipe {
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 Collections.emptyList(),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // ProcessEngineException(java.lang.String message)
                 new MethodMatcher(
                     "org.camunda.bpm.engine.ProcessEngineException <constructor>(java.lang.String)"),
@@ -373,9 +373,9 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("message", 0)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("message", 0)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // ProcessEngineException(java.lang.String message, java.lang.Throwable throwable)
                 new MethodMatcher(
                     "org.camunda.bpm.engine.ProcessEngineException <constructor>(java.lang.String, java.lang.Throwable)"),
@@ -389,10 +389,10 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("message", 0),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("throwable", 1)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("message", 0),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("throwable", 1)),
                 List.of(" set retries with job.getRetries() - 1")),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // ProcessEngineException(java.lang.String message, int code)
                 new MethodMatcher(
                     "org.camunda.bpm.engine.ProcessEngineException <constructor>(java.lang.String, int)"),
@@ -404,9 +404,9 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("message", 0)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("message", 0)),
                 List.of(" error code was removed")),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // ProcessEngineException(java.lang.Throwable throwable)
                 new MethodMatcher(
                     "org.camunda.bpm.engine.ProcessEngineException <constructor>(java.lang.Throwable)"),
@@ -420,12 +420,12 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("throwable", 0)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("throwable", 0)),
                 Collections.emptyList()));
 
-    List<ReplacementUtils.MethodInvocationSimpleReplacementSpec> incidentSpecs =
+    List<ReplacementUtils.SimpleReplacementSpec> incidentSpecs =
         List.of(
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // createIncident(java.lang.String incidentType, java.lang.String configuration)
                 new MethodMatcher(
                     "org.camunda.bpm.engine.delegate.DelegateExecution createIncident(java.lang.String, java.lang.String)"),
@@ -442,7 +442,7 @@ public class MigrateExecutionRecipe extends Recipe {
                     " incidentType was removed",
                     " configuration was removed",
                     " incident created by retries being 0")),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // createIncident(java.lang.String incidentType, java.lang.String configuration,
                 // java.lang.String message)
                 new MethodMatcher(
@@ -456,17 +456,17 @@ public class MigrateExecutionRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("message", 0)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("message", 0)),
                 List.of(
                     " incidentType was removed",
                     " configuration was removed",
                     " incident created by retries being 0")));
 
-    List<ReplacementUtils.MethodInvocationReplacementSpec> commonSpecs =
+    List<ReplacementUtils.ReplacementSpec> commonSpecs =
         Stream.concat(
-                errorSpecs.stream().map(spec -> (ReplacementUtils.MethodInvocationReplacementSpec) spec),
+                errorSpecs.stream().map(spec -> (ReplacementUtils.ReplacementSpec) spec),
                 incidentSpecs.stream()
-                    .map(spec -> (ReplacementUtils.MethodInvocationReplacementSpec) spec))
+                    .map(spec -> (ReplacementUtils.ReplacementSpec) spec))
             .toList();
 
     @Override
@@ -491,7 +491,7 @@ public class MigrateExecutionRecipe extends Recipe {
               Expression exception = throwStmt.getException();
               if (exception instanceof J.NewClass newClass) {
 
-                for (ReplacementUtils.MethodInvocationSimpleReplacementSpec spec : errorSpecs) {
+                for (ReplacementUtils.SimpleReplacementSpec spec : errorSpecs) {
                   if (spec.matcher().matches(newClass)) {
 
                     maybeAddImport("io.camunda.spring.client.exception.CamundaError");
@@ -523,7 +523,7 @@ public class MigrateExecutionRecipe extends Recipe {
                 J.VariableDeclarations.NamedVariable var =
                     variableDeclarations.getVariables().get(0);
                 if (var.getInitializer() instanceof J.MethodInvocation methodInvocation) {
-                  for (ReplacementUtils.MethodInvocationReplacementSpec spec : commonSpecs) {
+                  for (ReplacementUtils.ReplacementSpec spec : commonSpecs) {
                     if (spec.matcher().matches(methodInvocation)) {
                       Statement newStatement =
                           (Statement) replaceIncidentCreation(methodInvocation, ctx);
@@ -547,7 +547,7 @@ public class MigrateExecutionRecipe extends Recipe {
               }
 
               if (stmt instanceof J.MethodInvocation methodInvocation) {
-                for (ReplacementUtils.MethodInvocationReplacementSpec spec : commonSpecs) {
+                for (ReplacementUtils.ReplacementSpec spec : commonSpecs) {
                   if (spec.matcher().matches(methodInvocation)) {
 
                     Statement newStatement =
@@ -579,7 +579,7 @@ public class MigrateExecutionRecipe extends Recipe {
                       ? getCursor()
                       : getCursor().dropParentUntil(Statement.class::isInstance);
 
-              for (ReplacementUtils.MethodInvocationSimpleReplacementSpec specs : incidentSpecs) {
+              for (ReplacementUtils.SimpleReplacementSpec specs : incidentSpecs) {
                 if (specs.matcher().matches(methodInvocation)) {
 
                   Statement statement =

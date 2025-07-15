@@ -32,13 +32,13 @@ public abstract class AbstractMigrationRecipe extends Recipe {
     return cursor -> false;
   }
 
-  protected abstract List<ReplacementUtils.MethodInvocationSimpleReplacementSpec>
+  protected abstract List<ReplacementUtils.SimpleReplacementSpec>
       simpleMethodInvocations();
 
-  protected abstract List<ReplacementUtils.MethodInvocationBuilderReplacementSpec>
+  protected abstract List<ReplacementUtils.BuilderReplacementSpec>
       builderMethodInvocations();
 
-  protected abstract List<ReplacementUtils.MethodInvocationReturnReplacementSpec>
+  protected abstract List<ReplacementUtils.ReturnReplacementSpec>
       returnMethodInvocations();
 
   @Override
@@ -49,12 +49,12 @@ public abstract class AbstractMigrationRecipe extends Recipe {
         new JavaIsoVisitor<>() {
 
           // join specs - possible because we don't touch the method invocations
-          final List<ReplacementUtils.MethodInvocationReplacementSpec> commonSpecs =
+          final List<ReplacementUtils.ReplacementSpec> commonSpecs =
               Stream.concat(
                       simpleMethodInvocations().stream()
-                          .map(spec -> (ReplacementUtils.MethodInvocationReplacementSpec) spec),
+                          .map(spec -> (ReplacementUtils.ReplacementSpec) spec),
                       builderMethodInvocations().stream()
-                          .map(spec -> (ReplacementUtils.MethodInvocationReplacementSpec) spec))
+                          .map(spec -> (ReplacementUtils.ReplacementSpec) spec))
                   .toList();
 
           /**
@@ -79,7 +79,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
             if (originalInitializer instanceof J.MethodInvocation invocation) {
 
               // run through prepared migration rules
-              for (ReplacementUtils.MethodInvocationReplacementSpec spec : commonSpecs) {
+              for (ReplacementUtils.ReplacementSpec spec : commonSpecs) {
 
                 // if match is found for the invocation, check returnTypeFqn to adjust variable
                 // declaration type
@@ -173,7 +173,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
             }
 
             // run through prepared migration rules
-            for (ReplacementUtils.MethodInvocationReplacementSpec spec : commonSpecs) {
+            for (ReplacementUtils.ReplacementSpec spec : commonSpecs) {
 
               // if match is found for the invocation, check returnTypeFqn to adjust variable
               // declaration type
@@ -238,17 +238,17 @@ public abstract class AbstractMigrationRecipe extends Recipe {
             return super.visitAssignment(assignment, ctx);
           }
 
-          final List<ReplacementUtils.MethodInvocationSimpleReplacementSpec> simpleMethodInvocations =
+          final List<ReplacementUtils.SimpleReplacementSpec> simpleMethodInvocations =
               simpleMethodInvocations();
 
-          final Map<MethodMatcher, List<ReplacementUtils.MethodInvocationBuilderReplacementSpec>>
+          final Map<MethodMatcher, List<ReplacementUtils.BuilderReplacementSpec>>
               builderSpecMap =
                   builderMethodInvocations().stream()
                       .collect(
                           Collectors.groupingBy(
-                              ReplacementUtils.MethodInvocationBuilderReplacementSpec::matcher));
+                                  ReplacementUtils.BuilderReplacementSpec::matcher));
 
-          final List<ReplacementUtils.MethodInvocationReturnReplacementSpec> returnMethodInvocations =
+          final List<ReplacementUtils.ReturnReplacementSpec> returnMethodInvocations =
               returnMethodInvocations();
 
           /** Method invocations are visited and replaced */
@@ -262,7 +262,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
             }
 
             // visit simple method invocations
-            for (ReplacementUtils.MethodInvocationSimpleReplacementSpec spec : simpleMethodInvocations) {
+            for (ReplacementUtils.SimpleReplacementSpec spec : simpleMethodInvocations) {
               if (spec.matcher().matches(invocation)) {
 
                 return maybeAutoFormat(
@@ -282,7 +282,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
             }
 
             // loop through builder pattern groups
-            for (Map.Entry<MethodMatcher, List<ReplacementUtils.MethodInvocationBuilderReplacementSpec>>
+            for (Map.Entry<MethodMatcher, List<ReplacementUtils.BuilderReplacementSpec>>
                 entry : builderSpecMap.entrySet()) {
               MethodMatcher matcher = entry.getKey();
               if (matcher.matches(invocation)) {
@@ -300,7 +300,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
                 }
 
                 // loop through pattern options
-                for (ReplacementUtils.MethodInvocationBuilderReplacementSpec spec : entry.getValue()) {
+                for (ReplacementUtils.BuilderReplacementSpec spec : entry.getValue()) {
                   if (collectedArgs.keySet().equals(spec.methodNamesToExtractParameters())) {
                     Object[] args =
                         ReplacementUtils.prependBaseIdentifier(
@@ -335,7 +335,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
               String returnTypeFqn = getCursor().getNearestMessage(currentSelect.getSimpleName());
 
               // loop through return replacement specs
-              for (ReplacementUtils.MethodInvocationReturnReplacementSpec spec :
+              for (ReplacementUtils.ReturnReplacementSpec spec :
                   returnMethodInvocations) {
 
                 // matching old identifier and method invocation

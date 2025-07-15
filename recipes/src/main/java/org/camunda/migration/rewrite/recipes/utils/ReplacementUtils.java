@@ -7,7 +7,7 @@ import org.openrewrite.java.tree.*;
 
 public class ReplacementUtils {
 
-  public interface MethodInvocationReplacementSpec {
+  public interface ReplacementSpec {
     MethodMatcher matcher();
 
     JavaTemplate template();
@@ -21,7 +21,7 @@ public class ReplacementUtils {
     List<String> textComments();
   }
 
-  public record MethodInvocationSimpleReplacementSpec(
+  public record SimpleReplacementSpec(
       MethodMatcher matcher,
       JavaTemplate template,
       J.Identifier baseIdentifier,
@@ -29,11 +29,11 @@ public class ReplacementUtils {
       ReturnTypeStrategy returnTypeStrategy,
       List<NamedArg> argumentIndexes,
       List<String> textComments)
-      implements MethodInvocationReplacementSpec {
+      implements ReplacementSpec {
     public record NamedArg(String name, int index) {}
   }
 
-  public record MethodInvocationBuilderReplacementSpec(
+  public record BuilderReplacementSpec(
       MethodMatcher matcher,
       Set<String> methodNamesToExtractParameters,
       List<String> extractedParametersToApply,
@@ -42,9 +42,9 @@ public class ReplacementUtils {
       String returnTypeFqn,
       ReturnTypeStrategy returnTypeStrategy,
       List<String> textComments)
-      implements MethodInvocationReplacementSpec {}
+      implements ReplacementSpec {}
 
-  public record MethodInvocationReturnReplacementSpec(
+  public record ReturnReplacementSpec(
       MethodMatcher matcher, JavaTemplate template) {}
 
   public enum ReturnTypeStrategy {
@@ -59,7 +59,7 @@ public class ReplacementUtils {
   public static Object[] createArgs(
       J tree,
       J.Identifier baseIdentifier,
-      List<MethodInvocationSimpleReplacementSpec.NamedArg> argumentIndexes) {
+      List<SimpleReplacementSpec.NamedArg> argumentIndexes) {
     List<Expression> args;
 
     if (tree instanceof J.MethodInvocation methodInvocation) {

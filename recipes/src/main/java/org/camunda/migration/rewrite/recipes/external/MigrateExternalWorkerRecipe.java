@@ -145,9 +145,9 @@ public class MigrateExternalWorkerRecipe extends Recipe {
     }
 
     @Override
-    protected List<ReplacementUtils.MethodInvocationSimpleReplacementSpec> simpleMethodInvocations() {
+    protected List<ReplacementUtils.SimpleReplacementSpec> simpleMethodInvocations() {
       return List.of(
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
                   new MethodMatcher(
                   // "getVariable(String variableName)"
                   "org.camunda.bpm.client.task.ExternalTask getVariable(java.lang.String)"),
@@ -158,10 +158,10 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                   null,
                   ReplacementUtils.ReturnTypeStrategy.INFER_FROM_CONTEXT,
                   List.of(
-                  new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                  new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                       "variableName", 0)),
                   Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getProcessInstanceId()"
                   "org.camunda.bpm.client.task.ExternalTask getProcessInstanceId()"),
@@ -173,7 +173,7 @@ public class MigrateExternalWorkerRecipe extends Recipe {
               ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
               Collections.emptyList(),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getProcessDefinitionId()"
                   "org.camunda.bpm.client.task.ExternalTask getProcessDefinitionId()"),
@@ -185,7 +185,7 @@ public class MigrateExternalWorkerRecipe extends Recipe {
               ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
               Collections.emptyList(),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getCurrentActivityId()"
                   "org.camunda.bpm.client.task.ExternalTask getActivityId()"),
@@ -197,7 +197,7 @@ public class MigrateExternalWorkerRecipe extends Recipe {
               ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
               Collections.emptyList(),
               Collections.emptyList()),
-          new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+          new ReplacementUtils.SimpleReplacementSpec(
               new MethodMatcher(
                   // "getActivityInstanceId()"
                   "org.camunda.bpm.client.task.ExternalTask getActivityInstanceId()"),
@@ -212,12 +212,12 @@ public class MigrateExternalWorkerRecipe extends Recipe {
     }
 
     @Override
-    protected List<ReplacementUtils.MethodInvocationBuilderReplacementSpec> builderMethodInvocations() {
+    protected List<ReplacementUtils.BuilderReplacementSpec> builderMethodInvocations() {
       return Collections.emptyList();
     }
 
     @Override
-    protected List<ReplacementUtils.MethodInvocationReturnReplacementSpec> returnMethodInvocations() {
+    protected List<ReplacementUtils.ReturnReplacementSpec> returnMethodInvocations() {
       return Collections.emptyList();
     }
   }
@@ -237,9 +237,9 @@ public class MigrateExternalWorkerRecipe extends Recipe {
       return "During a previous step, external worker code was copied into the job worker. This recipe migrates BPMN error throwing code.";
     }
 
-    List<ReplacementUtils.MethodInvocationSimpleReplacementSpec> errorSpecs =
+    List<ReplacementUtils.SimpleReplacementSpec> errorSpecs =
         List.of(
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // handleBpmnError(ExternalTask externalTask, String errorCode)
                 new MethodMatcher(
                     "org.camunda.bpm.client.task.ExternalTaskService handleBpmnError(org.camunda.bpm.client.task.ExternalTask, java.lang.String)"),
@@ -251,9 +251,9 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("errorCode", 1)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("errorCode", 1)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // handleBpmnError(ExternalTask externalTask, String errorCode, String errorMessage)
                 new MethodMatcher(
                     "org.camunda.bpm.client.task.ExternalTaskService handleBpmnError(org.camunda.bpm.client.task.ExternalTask, java.lang.String, java.lang.String)"),
@@ -265,11 +265,11 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("errorCode", 1),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("errorCode", 1),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 2)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // handleBpmnError(ExternalTask externalTask, String errorCode, String errorMessage,
                 // Map<String, Object> variableMap)
                 new MethodMatcher(
@@ -283,13 +283,13 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("errorCode", 1),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("errorCode", 1),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 2),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "variableMap", 3)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // handleBpmnError(String externalTaskId, String errorCode, String errorMessage,
                 // Map<String, Object> variableMap)
                 new MethodMatcher(
@@ -303,13 +303,13 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("errorCode", 1),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("errorCode", 1),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 2),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "variableMap", 3)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // handleFailure(ExternalTask externalTask, String errorMessage, String
                 // errorDetails, int retries, long duration)
                 new MethodMatcher(
@@ -322,12 +322,12 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 1),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("retries", 3),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("duration", 4)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("retries", 3),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("duration", 4)),
                 List.of(" error details were removed")),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // handleFailure(String externalTaskId, String errorMessage, String
                 // errorDetails, int retries, long duration)
                 new MethodMatcher(
@@ -340,12 +340,12 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 1),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("retries", 3),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("duration", 4)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("retries", 3),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("duration", 4)),
                 List.of(" error details were removed")),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // handleFailure(String externalTaskId, String errorMessage, String
                 // errorDetails, int retries, long duration, Map<String, Object> variables,
                 // Map<String, Object> localVariables)
@@ -359,14 +359,14 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 1),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "variablsMap", 5),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("retries", 3),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("duration", 4)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("retries", 3),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("duration", 4)),
                 List.of(" error details were removed", " local variables were removed")),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // handleFailure(String externalTaskId, String errorMessage, String
                 // errorDetails, int retries, long duration, Map<String, Object> variables,
                 // Map<String, Object> localVariables)
@@ -380,17 +380,17 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 null,
                 ReplacementUtils.ReturnTypeStrategy.VOID,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "errorMessage", 1),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "variablsMap", 5),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("retries", 3),
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg("duration", 4)),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("retries", 3),
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg("duration", 4)),
                 List.of(" error details were removed", " local variables were removed")));
 
-    List<ReplacementUtils.MethodInvocationSimpleReplacementSpec> invocationSpecs =
+    List<ReplacementUtils.SimpleReplacementSpec> invocationSpecs =
         List.of(
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 // getRetries()
                 new MethodMatcher("org.camunda.bpm.client.task.ExternalTask getRetries()"),
                 RecipeUtils.createSimpleJavaTemplate(
@@ -402,7 +402,7 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                 Collections.emptyList(),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 new MethodMatcher(
                     // "complete(ExternalTask externalTask, Map<String, Object> variableMap)"
                     "org.camunda.bpm.client.task.ExternalTaskService complete(org.camunda.bpm.client.task.ExternalTask, java.util.Map)"),
@@ -411,10 +411,10 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 "java.util.Map",
                 ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "variableMap", 1)),
                 Collections.emptyList()),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 new MethodMatcher(
                     // "complete(ExternalTask externalTask, Map<String, Object> variableMap,
                     // Map<String, Object> localVariables)"
@@ -424,10 +424,10 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 "java.util.Map",
                 ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "variableMap", 1)),
                 List.of(" local variables were removed")),
-            new ReplacementUtils.MethodInvocationSimpleReplacementSpec(
+            new ReplacementUtils.SimpleReplacementSpec(
                 new MethodMatcher(
                     // "complete(String externalTaskId, Map<String, Object> variableMap, Map<String,
                     // Object> localVariables)"
@@ -437,7 +437,7 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 "java.util.Map",
                 ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
                 List.of(
-                    new ReplacementUtils.MethodInvocationSimpleReplacementSpec.NamedArg(
+                    new ReplacementUtils.SimpleReplacementSpec.NamedArg(
                         "variableMap", 1)),
                 List.of(" local variables were removed")));
 
@@ -460,7 +460,7 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 return super.visitMethodInvocation(invocation, ctx);
               }
 
-              for (ReplacementUtils.MethodInvocationSimpleReplacementSpec spec : invocationSpecs) {
+              for (ReplacementUtils.SimpleReplacementSpec spec : invocationSpecs) {
                 if (spec.matcher().matches(invocation)) {
 
                   return spec.template()
@@ -480,7 +480,7 @@ public class MigrateExternalWorkerRecipe extends Recipe {
                 }
               }
 
-              for (ReplacementUtils.MethodInvocationSimpleReplacementSpec spec : errorSpecs) {
+              for (ReplacementUtils.SimpleReplacementSpec spec : errorSpecs) {
                 if (spec.matcher().matches(invocation)) {
                   maybeAddImport("io.camunda.spring.client.exception.CamundaError");
 
