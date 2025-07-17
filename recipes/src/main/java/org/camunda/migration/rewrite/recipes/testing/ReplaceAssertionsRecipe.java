@@ -31,7 +31,9 @@ public class ReplaceAssertionsRecipe extends AbstractMigrationRecipe {
         true);
   }
 
-  // assertThat(pi).isCompleted().hasActiveElements();
+  // Check how to handle variables - can we add MapAssert to C8 assertions?
+  // assertThat(processInstance).variables().containsEntry("theAnswer", 42);
+  // assertThat(processInstance).hasVariable("theAnswer", 42);
 
   @Override
   protected List<ReplacementUtils.SimpleReplacementSpec> simpleMethodInvocations() {
@@ -66,17 +68,21 @@ public class ReplaceAssertionsRecipe extends AbstractMigrationRecipe {
   @Override
   protected List<ReplacementUtils.RenameReplacementSpec> renameMethodInvocations() {
     return List.of(
-        new ReplacementUtils.RenameReplacementSpec(
-            new MethodMatcher(
-                "org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert isWaitingAt(..)"),
-            "hasActiveElements"),
-        new ReplacementUtils.RenameReplacementSpec(
-            new MethodMatcher(
-                "org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert isEnded()"),
-            "isCompleted"),
-        new ReplacementUtils.RenameReplacementSpec(
-            new MethodMatcher(
-                "org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert hasPassed(..)"),
-            "hasCompletedElements"));
+        rename("isWaitingAt(..)", "hasActiveElements"),
+        rename("isNotWaitingAt(..)", "hasNotActivatedElements"),
+        rename("isWaitingAtExactly(..)", "hasActiveElementsExactly"),
+        rename("isEnded()", "isCompleted"),
+        rename("hasPassed(..)", "hasCompletedElements"),
+        rename("hasPassedInOrder(..)", "hasCompletedElementsInOrder"),
+        rename("isStarted()", "isCreated"),
+        rename("isActive()", "isActive"),
+        rename("hasVariables(..)", "hasVariableNames")
+    );
+  }
+  
+  private ReplacementUtils.RenameReplacementSpec rename(String methodC7, String methodC8) {
+    return new ReplacementUtils.RenameReplacementSpec(
+        new MethodMatcher("org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert " + methodC7),
+        methodC8);   
   }
 }

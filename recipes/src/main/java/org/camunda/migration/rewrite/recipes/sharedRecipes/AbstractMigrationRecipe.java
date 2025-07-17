@@ -265,8 +265,6 @@ public abstract class AbstractMigrationRecipe extends Recipe {
                 spec.maybeRemoveImports().forEach(this::maybeRemoveImport);
                 spec.maybeAddImports().forEach(this::maybeAddImport);
 
-                System.out.println(spec.maybeAddImports());
-
                 J.MethodInvocation modifiedInvocation =
                     (J.MethodInvocation)
                         RecipeUtils.applyTemplate(

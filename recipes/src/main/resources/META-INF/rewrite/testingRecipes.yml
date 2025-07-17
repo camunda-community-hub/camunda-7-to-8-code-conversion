@@ -1,6 +1,0 @@
-type: specs.openrewrite.org/v1beta/recipe
-name: org.camunda.migration.rewrite.recipes.AllTestingRecipes
-displayName: Runs all testing recipes
-description: Runs all testing recipes.
-recipeList:
-  - org.camunda.migration.rewrite.recipes.testing.ReplaceAssertionsRecipe
