@@ -2,7 +2,6 @@ package org.camunda.migration.rewrite.recipes.testing;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.camunda.migration.rewrite.recipes.sharedRecipes.AbstractMigrationRecipe;
 import org.camunda.migration.rewrite.recipes.utils.RecipeUtils;
 import org.camunda.migration.rewrite.recipes.utils.ReplacementUtils;
@@ -27,31 +26,31 @@ public class ReplaceAssertionsRecipe extends AbstractMigrationRecipe {
 
   @Override
   protected TreeVisitor<?, ExecutionContext> preconditions() {
-    //return new UsesMethod<>("org.camunda.bpm.engine.test.assertions.ProcessEngineTests assertThat(..)", true);
-    return new UsesMethod<>("org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert isWaitingAt(..)");    
+    return new UsesMethod<>(
+        "org.camunda.bpm.engine.test.assertions.ProcessEngineTests assertThat(org.camunda.bpm.engine.runtime.ProcessInstance)",
+        true);
   }
-  
+
   // assertThat(pi).isCompleted().hasActiveElements();
 
   @Override
   protected List<ReplacementUtils.SimpleReplacementSpec> simpleMethodInvocations() {
-      return List.of(
-          new ReplacementUtils.SimpleReplacementSpec(
-              new MethodMatcher("org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert isWaitingAt(..)"),
-              RecipeUtils.createSimpleJavaTemplate(
-                  "assertThat(#{processInstance:any(java.lang.Object)}).hasActiveElements(#{elementId:any(String)})",
-                  "io.camunda.assertions.CamundaAssert.assertThat"),
-              null, // RecipeUtils.createSimpleIdentifier("CamundaAssert", "io.camunda.assertions.CamundaAssert"),
-              "io.camunda.process.test.api.assertions.ProcessInstanceAssert",
-              ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
-              List.of(
-                  new ReplacementUtils.SimpleReplacementSpec.NamedArg("processInstance", 0),
-                  new ReplacementUtils.SimpleReplacementSpec.NamedArg("elementId", 1)
-              ),
-              List.of(
-                  )
-          )
-      );
+    return List.of(
+        new ReplacementUtils.SimpleReplacementSpec(
+            new MethodMatcher(
+                "org.camunda.bpm.engine.test.assertions.ProcessEngineTests assertThat(org.camunda.bpm.engine.runtime.ProcessInstance)"),
+            RecipeUtils.createSimpleJavaTemplate(
+                "CamundaAssert.assertThat(#{processInstance:any(io.camunda.client.api.response.ProcessInstanceEvent)})",
+                "io.camunda.process.test.api.CamundaAssert"),
+            null,
+            "io.camunda.process.test.api.assertions.ProcessInstanceAssert",
+            ReplacementUtils.ReturnTypeStrategy.USE_SPECIFIED_TYPE,
+            List.of(
+                new ReplacementUtils.SimpleReplacementSpec.NamedArg(
+                    "processInstance", 0, "io.camunda.client.api.response.ProcessInstanceEvent")),
+            Collections.emptyList(),
+            List.of("org.camunda.bpm.engine.test.assertions.ProcessEngineTests.assertThat"),
+            List.of("io.camunda.process.test.api.CamundaAssert")));
   }
 
   @Override
@@ -61,8 +60,23 @@ public class ReplaceAssertionsRecipe extends AbstractMigrationRecipe {
 
   @Override
   protected List<ReturnReplacementSpec> returnMethodInvocations() {
-    return Collections.emptyList(); // not used
+    return Collections.emptyList();
   }
 
-
+  @Override
+  protected List<ReplacementUtils.RenameReplacementSpec> renameMethodInvocations() {
+    return List.of(
+        new ReplacementUtils.RenameReplacementSpec(
+            new MethodMatcher(
+                "org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert isWaitingAt(..)"),
+            "hasActiveElements"),
+        new ReplacementUtils.RenameReplacementSpec(
+            new MethodMatcher(
+                "org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert isEnded()"),
+            "isCompleted"),
+        new ReplacementUtils.RenameReplacementSpec(
+            new MethodMatcher(
+                "org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert hasPassed(..)"),
+            "hasCompletedElements"));
+  }
 }
