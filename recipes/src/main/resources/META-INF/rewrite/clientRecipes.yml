@@ -18,6 +18,7 @@ recipeList:
   - org.camunda.migration.rewrite.recipes.client.MigrateSignalMethodsRecipe
   - org.camunda.migration.rewrite.recipes.client.MigrateCancelProcessInstanceMethodsRecipe
   - org.camunda.migration.rewrite.recipes.client.MigrateStartProcessInstanceMethodsRecipe
+  - org.camunda.migration.rewrite.recipes.client.MigrateMessageMethodsRecipe
   - org.openrewrite.java.ReplaceAnnotation:
       annotationPatternToReplace: "@org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication"
       annotationTemplateToInsert: "@io.camunda.spring.client.annotation.Deployment(resources = \"classpath*:/bpmn/**/*.bpmn\")"
