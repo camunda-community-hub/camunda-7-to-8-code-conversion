@@ -16,9 +16,11 @@ public class HandleUserTasks {
     private ProcessEngine engine;
 
     public List<Task> searchUserTasksByBPMNModelIdentifier(String processDefinitionId) {
-        return engine.getTaskService().createTaskQuery()
+        List<Task> userTasks = engine.getTaskService().createTaskQuery()
                 .processDefinitionId(processDefinitionId)
                 .list();
+
+        Task firstTask = userTasks.get(0);
     }
 
     public void claimUserTask(String taskId, String userId) {

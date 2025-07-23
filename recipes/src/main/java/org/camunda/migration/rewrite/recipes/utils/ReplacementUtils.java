@@ -45,7 +45,14 @@ public class ReplacementUtils {
       implements ReplacementSpec {}
 
   public record ReturnReplacementSpec(
-      MethodMatcher matcher, JavaTemplate template) {}
+      MethodMatcher matcher,
+      JavaTemplate template,
+      List<String> maybeRemoveImports,
+      List<String> maybeAddImports) {
+    public ReturnReplacementSpec(MethodMatcher matcher, JavaTemplate template) {
+      this(matcher, template, Collections.emptyList(), Collections.emptyList());
+    }
+  }
 
   public enum ReturnTypeStrategy {
     /** Use a specific, provided fully qualified name. */
@@ -57,9 +64,7 @@ public class ReplacementUtils {
   }
 
   public static Object[] createArgs(
-      J tree,
-      J.Identifier baseIdentifier,
-      List<SimpleReplacementSpec.NamedArg> argumentIndexes) {
+      J tree, J.Identifier baseIdentifier, List<SimpleReplacementSpec.NamedArg> argumentIndexes) {
     List<Expression> args;
 
     if (tree instanceof J.MethodInvocation methodInvocation) {
