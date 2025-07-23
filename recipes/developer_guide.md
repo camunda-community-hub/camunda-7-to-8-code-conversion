@@ -1,40 +1,78 @@
-# Developer Guide: Migrating from Camunda 7 to Camunda 8
-
-This developer guide extends the user guide.
-
-## Introduction
+# Developer Guide: Extending Open Rewrite Recipes For Migrating from Camunda 7 to Camunda 8
 
 This guide is aimed at developers who are adjusting or extending the migration recipes. Such changes are likely to
 affect the following aspects:
 
-* preconditions of existing recipes to ensure recipes are applied
-* additional transformation rules for existing recipes based on the abstract migration recipe
-* new recipes based on the abstract migration recipe to cover more client code
-* bug fixes
+* **preconditions** of existing recipes to ensure recipes are applied
+* **additional transformation rules** for existing recipes based on the abstract migration recipe
+* **new recipes** based on the abstract migration recipe to cover more client code
+* **bug fixes**
 
-## Project Structure
+One important message is that it is totally OK to extend or even adjust the existing recipes, actually we encourage you to do so. This is because many Camunda 7 solutions are structured slightly differently, which is often easily adressed by adjusting recipes, but hard to capture generically. Also keep in mind, that a code refactoring is a one time effort that can be asily reviewed - the code does not need to run in production.
 
-In the [README](./README.md), the recipes that are available for the user are presented, e.g., AllClientPrepareRecipes.
+The Apache Open Source license this code is released under allows you to make any changes.
+
+## Extending recipes
+
+Let's start with an example of a change you might want to do. Assume your Java Delegates does not implement `org.camunda.bpm.engine.delegate.JavaDelegate` but extend your own
+superclass `org.acme.MyJavaDelegate`. This would not be picked up by the out-of-the-box recipes.
+
+However, you can could
+extend [InjectJobWorkerRecipe.java](/recipes/src/main/java/org/camunda/migration/rewrite/recipes/delegate/prepare/InjectJobWorkerRecipe.java#L34)
+where the preconditions include classes implementing the original JavaDelegate:
+
+```java
+public TreeVisitor<?, ExecutionContext> getVisitor(){
+
+        // define preconditions
+        TreeVisitor<?, ExecutionContext> check=
+        Preconditions.and(
+        Preconditions.not(new UsesType<>("io.camunda.client.api.response.ActivatedJob",true)),
+        new UsesType<>("org.camunda.bpm.engine.delegate.DelegateExecution",true));
+```
+
+You could adjust this to
+
+```java
+public TreeVisitor<?, ExecutionContext> getVisitor(){
+
+        // define preconditions
+        TreeVisitor<?, ExecutionContext> check=
+        Preconditions.and(
+        Preconditions.not(new UsesType<>(RecipeConstants.Type.ACTIVATED_JOB,true)),
+        Preconditions.or(
+        new UsesType<>("org.camunda.bpm.engine.delegate.DelegateExecution",true),
+        new UsesType<>("org.acme.MyJavaDelegate",true),
+        )); 
+```
+
+Now the recipe would also pick up those delegates and add the Camunda 8 Job Worker.
+
+You might need to do some more changes, as your `execute` method might have also been renamed or carry different parameters. We recommend not trying to perfectly extend our recipe code - but to check it out and change it on your own fork/branch. Remember that such refactoring code is only running once for the migration and can be dumped afterwards.
+
+## Understanding Existing Recipes
+
+In the [README](./README.md), the out-of-the-box recipes that are available for the user are presented, e.g., `AllClientPrepareRecipes`.
 These recipes are themselves made up of multiple recipes that make granular changes. You can find all custom recipes in
 the [source folder](./src/main/java/org/camunda/migration/rewrite/recipes), separated by type of code and transformation
 phase (client, delegate, external, testing). These custom recipes are supplemented with existing OpenRewrite recipes and
 composed into the aforementioned composed declarative recipes. You can inspect their composition in
-the [META-INF.rewrite](./src/main/resources/META-INF/rewrite) folder. When adding a new custom or existing OpenRewrite
+the [META-INF/rewrite](./src/main/resources/META-INF/rewrite) folder. When adding a new custom or existing OpenRewrite
 recipe, ensure that it is added to the correct composed recipe.
 
-The folder [sharedRecipes](./src/main/java/org/camunda/migration/rewrite/recipes/sharedRecipes) contains two important
+The [sharedRecipes folder](./src/main/java/org/camunda/migration/rewrite/recipes/sharedRecipes) contains two important
 recipes:
 
-* AbstractMigrationRecipe: extracted transformation logic for reusability purposes
-* ReplaceTypedValueAPIRecipe: a combined recipe to transform TypedValueAPI types and method calls to JavaObjectAPI types
+* `AbstractMigrationRecipe`: extracted transformation logic for reusability purposes
+* `ReplaceTypedValueAPIRecipe`: a combined recipe to transform TypedValueAPI types and method calls to JavaObjectAPI types
   and method calls
 
-The folder [utils](./src/main/java/org/camunda/migration/rewrite/recipes/utils) contains two util classes:
+The [utils folder](./src/main/java/org/camunda/migration/rewrite/recipes/utils) contains two util classes:
 
-* RecipeUtils: a collection of helper functions to create, change or apply OpenRewrite objects
-* ReplacementUtils: the specification of rules used for the AbstractMigrationRecipe
+* `RecipeUtils`: a collection of helper functions to create, change or apply OpenRewrite objects
+* `ReplacementUtils`: the specification of rules used for the AbstractMigrationRecipe
 
-## Prepare and Cleanup Recipes
+### Prepare and Cleanup Recipes
 
 Prepare and cleanup recipes are used to separate the code transformation into separate stages.
 
@@ -54,12 +92,12 @@ Here is what the cleanup recipes are used for:
 Apart from the ReplaceTypedValueAPIRecipe, these recipes are small and very customized. The ReplaceTypedValueAPIRecipe
 is a very complex recipe to transform all aspects of the TypedValueAPI for client and glue code alike.
 
-## Abstract Migration Recipe
+### Abstract Migration Recipe
 
 The [AbstractMigrationRecipe](./src/main/java/org/camunda/migration/rewrite/recipes/sharedRecipes/AbstractMigrationRecipe.java)
 can be used to transform various types of java code patterns by providing transformation rules.
 
-### Variable Declarations, Assignments and Simple Method Invocations
+#### Variable Declarations, Assignments and Simple Method Invocations
 
 Patterns:
 
@@ -108,7 +146,7 @@ provided.
 You can find examples for this simple replacement spec in the client migrate recipes which extend the
 AbstractMigrationRecipe.
 
-### Variable Declarations, Assignments and Builder Pattern Method Invocations
+#### Variable Declarations, Assignments and Builder Pattern Method Invocations
 
 Patterns:
 
@@ -150,7 +188,7 @@ The other fields behave in the same manner as described above.
 You can find examples for this builder replacement spec in the client migrate recipes which extend the
 AbstractMigrationRecipe.
 
-### Method Invocations based on Returned Values
+#### Method Invocations based on Returned Values
 
 Pattern:
 
@@ -174,7 +212,7 @@ The matcher finds the method invocation to be transformed. The java template is 
 But in this case, the base identifier is not fixed, but needs to be constructed during runtime. The name of the base
 identifier is kept the same, but the type is changed according to the previously transformed variable declaration.
 
-### Method Invocations without Base Identifier
+#### Method Invocations without Base Identifier
 
 Pattern:
 
@@ -192,7 +230,7 @@ Instead, a simple renaming of a specific matched method invocation takes place. 
 is necessary. In fact, the base identifier of this chained method call is probably transformed via a different
 transformation specification.
 
-### Under the Hood
+#### Under the Hood
 
 A recipe that extends the AbstractMigrationRecipe can also provide a skipCondition. If this skipCondition, based on
 cursor information is evaluated to true, all visitors are skipped, e.g., no visitor inside a method with a specific name
@@ -204,7 +242,7 @@ context.
 Comments are automatically made in the correct scope and duplication is avoided, also by taking a note when the comments
 have already been added.
 
-## Preconditions
+### Preconditions
 
 All recipes in this project work with preconditions. These preconditions are made up of a logical composition of checks
 for used types or method calls. They are mainly used to prevent recipes from running on classes they are not intended to
@@ -313,47 +351,6 @@ renamed, but the entire method call chain remains intact and is not replaced in 
 These preconditions evaluate to true if either one of the methods is used in a java file. In this case, if a signal is
 broadcast in Camunda 7, the recipe to migrate the signal broadcast methods and types is applied.
 
-## Extending recipes
-
-For many scenarios you might want to extend the recipes.
-
-For example, your Java Delegates might not implement `org.camunda.bpm.engine.delegate.JavaDelegate` but extend your own
-superclass `org.acme.MyJavaDelegate`. This would not be picked up by the out-of-the-box recipes.
-
-However, you can could
-extend [InjectJobWorkerRecipe.java](/recipes/src/main/java/org/camunda/migration/rewrite/recipes/delegate/prepare/InjectJobWorkerRecipe.java#L34)
-where the preconditions only include classes implementing the original JavaDelegate:
-
-```java
-public TreeVisitor<?, ExecutionContext> getVisitor(){
-
-        // define preconditions
-        TreeVisitor<?, ExecutionContext> check=
-        Preconditions.and(
-        Preconditions.not(new UsesType<>("io.camunda.client.api.response.ActivatedJob",true)),
-        new UsesType<>("org.camunda.bpm.engine.delegate.DelegateExecution",true));
-```
-
-You could now adjust this to
-
-```java
-public TreeVisitor<?, ExecutionContext> getVisitor(){
-
-        // define preconditions
-        TreeVisitor<?, ExecutionContext> check=
-        Preconditions.and(
-        Preconditions.not(new UsesType<>(RecipeConstants.Type.ACTIVATED_JOB,true)),
-        Preconditions.or(
-        new UsesType<>("org.camunda.bpm.engine.delegate.DelegateExecution",true),
-        new UsesType<>("org.acme.MyJavaDelegate",true),
-        )); 
-```
-
-Now the recipe would also pick up those delegates and add the Camunda 8 Job Worker.
-
-You might need to do some more changes, as your `execute` method might have also been renamed or carry different
-parameters. We recommend not trying to perfectly extend our recipe code - but to check it out and change it on your own
-fork/branch. Remember that such refactoring code is only running once for the migration and can be dumped afterwards.
 
 ## Learnings
 
