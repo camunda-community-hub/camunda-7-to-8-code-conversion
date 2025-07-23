@@ -169,4 +169,11 @@ public class MigrateUserTaskMethodsRecipe extends AbstractMigrationRecipe {
             Collections.emptyList(),
             List.of("java.util.Date", "java.time.Instant")));
   }
+
+  @Override
+  protected List<ReplacementUtils.RenameReplacementSpec> renameMethodInvocations() {
+    return Collections.emptyList();
+  }
+
+
 }

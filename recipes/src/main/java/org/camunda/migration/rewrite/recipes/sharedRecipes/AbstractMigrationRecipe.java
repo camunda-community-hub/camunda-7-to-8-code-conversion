@@ -38,6 +38,8 @@ public abstract class AbstractMigrationRecipe extends Recipe {
 
   protected abstract List<ReplacementUtils.ReturnReplacementSpec> returnMethodInvocations();
 
+  protected abstract List<ReplacementUtils.RenameReplacementSpec> renameMethodInvocations();
+
   @Override
   public TreeVisitor<?, ExecutionContext> getVisitor() {
 
@@ -295,10 +297,13 @@ public abstract class AbstractMigrationRecipe extends Recipe {
 
             // visit simple method invocations
             for (ReplacementUtils.SimpleReplacementSpec spec : simpleMethodInvocations) {
+
               if (spec.matcher().matches(invocation)) {
 
-                return maybeAutoFormat(
-                    invocation,
+                spec.maybeRemoveImports().forEach(this::maybeRemoveImport);
+                spec.maybeAddImports().forEach(this::maybeAddImport);
+
+                J.MethodInvocation modifiedInvocation =
                     (J.MethodInvocation)
                         RecipeUtils.applyTemplate(
                             spec.template(),
@@ -308,8 +313,10 @@ public abstract class AbstractMigrationRecipe extends Recipe {
                                 invocation, spec.baseIdentifier(), spec.argumentIndexes()),
                             getCursor().getNearestMessage(invocation.getId().toString()) != null
                                 ? Collections.emptyList()
-                                : spec.textComments()),
-                    ctx);
+                                : spec.textComments());
+
+                return maybeAutoFormat(
+                    invocation, super.visitMethodInvocation(modifiedInvocation, ctx), ctx);
               }
             }
 
@@ -393,6 +400,16 @@ public abstract class AbstractMigrationRecipe extends Recipe {
                               Collections.emptyList()),
                       ctx);
                 }
+              }
+            }
+
+            for (ReplacementUtils.RenameReplacementSpec spec : renameMethodInvocations()) {
+              if (spec.matcher().matches(invocation)) {
+                return super.visitMethodInvocation(
+                    invocation.withName(
+                        RecipeUtils.createSimpleIdentifier(
+                            spec.newSimpleName(), "java.lang.String")),
+                    ctx);
               }
             }
 

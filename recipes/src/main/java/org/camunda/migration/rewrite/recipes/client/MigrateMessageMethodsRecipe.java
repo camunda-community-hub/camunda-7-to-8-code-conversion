@@ -381,4 +381,11 @@ public class MigrateMessageMethodsRecipe extends AbstractMigrationRecipe {
   protected List<ReplacementUtils.ReturnReplacementSpec> returnMethodInvocations() {
     return Collections.emptyList();
   }
+
+  @Override
+  protected List<ReplacementUtils.RenameReplacementSpec> renameMethodInvocations() {
+    return Collections.emptyList();
+  }
+
+
 }
