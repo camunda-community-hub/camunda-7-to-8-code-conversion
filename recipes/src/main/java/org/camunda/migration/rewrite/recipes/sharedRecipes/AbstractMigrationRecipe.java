@@ -146,7 +146,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
 
                   maybeRemoveImport(
                       RecipeUtils.getGenericLongName(
-                          declarations.getTypeAsFullyQualified().getFullyQualifiedName()));
+                              declarations.getTypeAsFullyQualified().toString()));
 
                   return maybeAutoFormat(declarations, modifiedDeclarations, ctx);
                 }

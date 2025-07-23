@@ -133,7 +133,7 @@ public class RecipeUtils {
     int genericStart = fqn.indexOf('<');
     if (genericStart == -1) {
       // No generics, return the simple class name
-      return fqn.substring(fqn.lastIndexOf('.') + 1);
+      return fqn;
     }
 
     String genericPart = fqn.substring(genericStart + 1, fqn.length() - 1); // remove < and >

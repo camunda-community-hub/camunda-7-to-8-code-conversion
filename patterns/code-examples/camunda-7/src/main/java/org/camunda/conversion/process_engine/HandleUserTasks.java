@@ -18,6 +18,7 @@ public class HandleUserTasks {
     public List<Task> searchUserTasksByBPMNModelIdentifier(String processDefinitionId) {
         List<Task> userTasks = engine.getTaskService().createTaskQuery()
                 .processDefinitionId(processDefinitionId)
+                .dueBefore()
                 .list();
 
         Task firstTask = userTasks.get(0);
