@@ -148,7 +148,7 @@ public abstract class AbstractMigrationRecipe extends Recipe {
 
                   maybeRemoveImport(
                       RecipeUtils.getGenericLongName(
-                              declarations.getTypeAsFullyQualified().toString()));
+                          declarations.getTypeAsFullyQualified().toString()));
 
                   return maybeAutoFormat(declarations, modifiedDeclarations, ctx);
                 }
@@ -166,7 +166,8 @@ public abstract class AbstractMigrationRecipe extends Recipe {
 
                 J.VariableDeclarations modifiedDeclarations =
                     RecipeUtils.createSimpleJavaTemplate(
-                            shortName + " " + originalName.getSimpleName() + " = #{any()}", longName)
+                            shortName + " " + originalName.getSimpleName() + " = #{any()}",
+                            longName)
                         .apply(
                             getCursor(),
                             declarations.getCoordinates().replace(),

@@ -7,9 +7,12 @@ import io.camunda.client.api.search.response.UserTask;
 import io.camunda.client.api.search.response.Variable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import io.camunda.process.test.api.CamundaAssert;
 
 import java.util.List;
 import java.util.Map;
+
+import static io.camunda.process.test.api.CamundaAssert.assertThat;
 
 @Component
 public class HandleUserTasks {
@@ -18,11 +21,15 @@ public class HandleUserTasks {
     private CamundaClient camundaClient;
 
     public List<UserTask> searchUserTasksByBPMNModelIdentifier(String processDefinitionKey) {
-        return camundaClient.newUserTaskSearchRequest()
+        List<UserTask> userTasks = camundaClient.newUserTaskSearchRequest()
                 .filter(userTaskFilter -> userTaskFilter.bpmnProcessId(processDefinitionKey).dueDate(dueDate -> dueDate.lt()))
                 .send()
                 .join()
                 .items();
+
+        UserTask firstTask = userTasks.get(0);
+
+        assertThat()
     }
 
     public AssignUserTaskResponse claimUserTask(Long userTaskKey, String assignee) {
