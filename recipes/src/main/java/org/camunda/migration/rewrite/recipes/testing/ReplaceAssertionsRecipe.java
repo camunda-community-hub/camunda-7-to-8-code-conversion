@@ -11,6 +11,7 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesType;
+import org.openrewrite.java.search.UsesMethod;
 
 public class ReplaceAssertionsRecipe extends AbstractMigrationRecipe {
 
@@ -26,7 +27,7 @@ public class ReplaceAssertionsRecipe extends AbstractMigrationRecipe {
 
   @Override
   protected TreeVisitor<?, ExecutionContext> preconditions() {
-    return new UsesType<>("io.camunda.client.CamundaClient", true);
+    return new UsesMethod<>("org.camunda.bpm.engine.test.assertions.ProcessEngineTests assertThat(..)", true);
   }
 
   // Check how to handle variables - can we add MapAssert to C8 assertions?
