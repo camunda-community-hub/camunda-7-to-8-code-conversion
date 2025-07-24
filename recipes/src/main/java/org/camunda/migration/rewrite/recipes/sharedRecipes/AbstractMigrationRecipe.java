@@ -404,6 +404,8 @@ public abstract class AbstractMigrationRecipe extends Recipe {
               }
             }
 
+            System.out.println(invocation.getMethodType());
+
             for (ReplacementUtils.RenameReplacementSpec spec : renameMethodInvocations()) {
               if (spec.matcher().matches(invocation)) {
                 return super.visitMethodInvocation(

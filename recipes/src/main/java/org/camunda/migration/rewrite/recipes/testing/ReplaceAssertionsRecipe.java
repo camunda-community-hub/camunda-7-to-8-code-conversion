@@ -94,6 +94,10 @@ public class ReplaceAssertionsRecipe extends AbstractMigrationRecipe {
         rename("isStarted()", "isCreated"),
         rename("isActive()", "isActive"),
         rename("hasVariables(..)", "hasVariableNames"),
+        rename("variables()", "isCreated"),
+        new ReplacementUtils.RenameReplacementSpec(
+                new MethodMatcher("org.assertj.core.api.AbstractMapAssert containsEntry(..)"),
+                "hasVariable"),
         new ReplacementUtils.RenameReplacementSpec(
             new MethodMatcher("org.camunda.bpm.engine.test.assertions.bpmn.TaskAssert isAssignedTo(..)"),
             "hasAssignee"));

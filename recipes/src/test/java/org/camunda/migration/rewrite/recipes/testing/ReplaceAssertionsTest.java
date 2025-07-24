@@ -142,6 +142,7 @@ public class Testcases {
         assertThat(processInstance).isWaitingAt("xxx");
         assertThat(firstTask).isAssignedTo("John Doe");
         assertThat(processInstance).isEnded().hasPassed("yyy");
+        assertThat(processInstance).variables().containsEntry("a", "b");
     }
 }
 """,
@@ -196,6 +197,7 @@ public class Testcases {
         assertThat(processInstance).hasActiveElements("xxx");
         assertThat(byTaskName(firstTask.getName())).hasAssignee("John Doe");
         assertThat(processInstance).isCompleted().hasCompletedElements("yyy");
+        assertThat(processInstance).isCreated().hasVariable("a", "b");
     }
 }
                                             """));
