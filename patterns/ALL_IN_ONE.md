@@ -679,14 +679,15 @@ The following patterns focus on handling user tasks in Camunda 7 vs. Camunda 8.
 ###### ProcessEngine (Camunda 7)
 
 ```java
-    public List<Task> searchUserTasksByBPMNModelIdentifier(String processDefinitionId) {
+    public List<Task> searchUserTasksByBPMNModelIdentifier(String processDefinitionKey) {
         return engine.getTaskService().createTaskQuery()
-                .processDefinitionId(processDefinitionId)
+                .processDefinitionKey(processDefinitionKey)
                 .list();
     }
 ```
 
 -   the taskQuery can be extended by various information to filter more precisely
+-   using the processDefinitionKey gets you all tasks related to a specific process definition
 
 ###### CamundaClient (Camunda 8)
 

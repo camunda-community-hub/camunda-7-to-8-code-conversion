@@ -19,7 +19,7 @@ public class HandleUserTasks {
 
     public List<UserTask> searchUserTasksByBPMNModelIdentifier(String processDefinitionKey) {
         return camundaClient.newUserTaskSearchRequest()
-                .filter(userTaskFilter -> userTaskFilter.bpmnProcessId(processDefinitionKey).dueDate(dueDate -> dueDate.lt()))
+                .filter(userTaskFilter -> userTaskFilter.bpmnProcessId(processDefinitionKey))
                 .send()
                 .join()
                 .items();

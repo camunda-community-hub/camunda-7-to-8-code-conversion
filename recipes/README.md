@@ -99,3 +99,10 @@ mvn rewrite:run
 See also thge [Camunda 7 to 8 Migration Example](https://github.com/camunda-community-hub/camunda-7-to-8-migration-example) to see a complete example being refactored.
 
 You might also want to check the [Quickstart Guide: Setting up your project and running recipes](https://docs.openrewrite.org/running-recipes/getting-started).
+
+## Extending recipes
+
+For many scenarios you might want to extend the recipes. For example, your Java Delegates might not implement ` org.camunda.bpm.engine.delegate.JavaDelegate` but extend your own superclass `org.acme.MyJavaDelegate`. This would not be picked up by the out-of-the-box recipes. 
+
+Please read:
+- [Developer Guide](developer_guide.md)
