@@ -2,33 +2,33 @@
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Extending Recipes](#extending-recipes)
-- [Understanding Existing Recipes](#understanding-existing-recipes)
-  - [Prepare and Cleanup Recipes](#prepare-and-cleanup-recipes)
-  - [Abstract Migration Recipe](#abstract-migration-recipe)
-    - [Variable Declarations, Assignments and Simple Method Invocations](#variable-declarations-assignments-and-simple-method-invocations)
-    - [Variable Declarations, Assignments and Builder Pattern Method Invocations](#variable-declarations-assignments-and-builder-pattern-method-invocations)
-    - [Method Invocations Based on Returned Values](#method-invocations-based-on-returned-values)
-    - [Method Invocations Without Base Identifier](#method-invocations-without-base-identifier)
-    - [Under the Hood](#under-the-hood)
-  - [Preconditions](#preconditions)
-- [Examples](#examples)
-  - [SimpleReplacementSpec](#simplereplacementspec)
-  - [BuilderReplacementSpec](#builderreplacementspec)
-  - [ReturnReplacementSpec](#returnreplacementspec)
-  - [RenameReplacementSpec](#renamereplacementspec)
-  - [Preconditions Example](#preconditions-example)
-- [Lessons Learned](#lessons-learned)
+-   [Overview](#overview)
+-   [Extending Recipes](#extending-recipes)
+-   [Understanding Existing Recipes](#understanding-existing-recipes)
+    -   [Prepare and Cleanup Recipes](#prepare-and-cleanup-recipes)
+    -   [Abstract Migration Recipe](#abstract-migration-recipe)
+        -   [Variable Declarations, Assignments and Simple Method Invocations](#variable-declarations-assignments-and-simple-method-invocations)
+        -   [Variable Declarations, Assignments and Builder Pattern Method Invocations](#variable-declarations-assignments-and-builder-pattern-method-invocations)
+        -   [Method Invocations Based on Returned Values](#method-invocations-based-on-returned-values)
+        -   [Method Invocations Without Base Identifier](#method-invocations-without-base-identifier)
+        -   [Under the Hood](#under-the-hood)
+    -   [Preconditions](#preconditions)
+-   [Examples](#examples)
+    -   [SimpleReplacementSpec](#simplereplacementspec)
+    -   [BuilderReplacementSpec](#builderreplacementspec)
+    -   [ReturnReplacementSpec](#returnreplacementspec)
+    -   [RenameReplacementSpec](#renamereplacementspec)
+    -   [Preconditions Example](#preconditions-example)
+-   [Lessons Learned](#lessons-learned)
 
 ## Overview
 
 This guide is aimed at developers who are adjusting or extending the migration recipes. Such changes typically affect the following aspects:
 
-* **Preconditions** of existing recipes to ensure recipes are applied correctly
-* **Additional transformation rules** for existing recipes based on the abstract migration recipe
-* **New recipes** based on the abstract migration recipe to cover more client code patterns
-* **Bug fixes** and improvements
+-   **Preconditions** of existing recipes to ensure recipes are applied correctly
+-   **Additional transformation rules** for existing recipes based on the abstract migration recipe
+-   **New recipes** based on the abstract migration recipe to cover more client code patterns
+-   **Bug fixes** and improvements
 
 We strongly encourage extending or adjusting existing recipes. Many Camunda 7 solutions are structured differently, which is often easily addressed by adjusting recipes, though it can be hard to capture generically. Keep in mind that code refactoring is a one-time effort that can be easily reviewed—the code does not need to run in production.
 
@@ -62,7 +62,7 @@ public TreeVisitor<?, ExecutionContext> getVisitor(){
         Preconditions.or(
         new UsesType<>("org.camunda.bpm.engine.delegate.DelegateExecution",true),
         new UsesType<>("org.acme.MyJavaDelegate",true),
-        )); 
+        ));
 ```
 
 Now the recipe would also pick up those delegates and add the Camunda 8 Job Worker.
@@ -75,13 +75,13 @@ In the [README](./README.md), the out-of-the-box recipes available to users are 
 
 The [sharedRecipes folder](./src/main/java/org/camunda/migration/rewrite/recipes/sharedRecipes) contains two important recipes:
 
-* `AbstractMigrationRecipe`: Extracted transformation logic for reusability purposes
-* `ReplaceTypedValueAPIRecipe`: A combined recipe to transform TypedValueAPI types and method calls to JavaObjectAPI types and method calls
+-   `AbstractMigrationRecipe`: Extracted transformation logic for reusability purposes
+-   `ReplaceTypedValueAPIRecipe`: A combined recipe to transform TypedValueAPI types and method calls to JavaObjectAPI types and method calls
 
 The [utils folder](./src/main/java/org/camunda/migration/rewrite/recipes/utils) contains two utility classes:
 
-* `RecipeUtils`: A collection of helper functions to create, modify, or apply OpenRewrite objects
-* `ReplacementUtils`: The specification of rules used for the AbstractMigrationRecipe
+-   `RecipeUtils`: A collection of helper functions to create, modify, or apply OpenRewrite objects
+-   `ReplacementUtils`: The specification of rules used for the AbstractMigrationRecipe
 
 ### Prepare and Cleanup Recipes
 
@@ -89,16 +89,16 @@ Prepare and cleanup recipes separate the code transformation into distinct stage
 
 Prepare recipes are used for:
 
-* **All code**: Replace TypedValueAPI with JavaObjectAPI
-* **Client**: Add an autowired CamundaClient dependency to Java classes that require it in the migrate phase
-* **Delegate**: Inject a dummy job worker method beneath JavaDelegate methods
-* **External**: Inject a dummy job worker method beneath external worker methods
+-   **All code**: Replace TypedValueAPI with JavaObjectAPI
+-   **Client**: Add an autowired CamundaClient dependency to Java classes that require it in the migrate phase
+-   **Delegate**: Inject a dummy job worker method beneath JavaDelegate methods
+-   **External**: Inject a dummy job worker method beneath external worker methods
 
 Cleanup recipes are used for:
 
-* **Client**: Remove process engine, runtime service, and other dependencies
-* **Delegate**: Delete the JavaDelegate method and remove imports
-* **External**: Delete the external worker method and remove imports
+-   **Client**: Remove process engine, runtime service, and other dependencies
+-   **Delegate**: Delete the JavaDelegate method and remove imports
+-   **External**: Delete the external worker method and remove imports
 
 Apart from the `ReplaceTypedValueAPIRecipe`, these recipes are small and highly customized. The `ReplaceTypedValueAPIRecipe` is a complex recipe that transforms all aspects of the TypedValueAPI for both client and glue code.
 
@@ -110,9 +110,9 @@ The [AbstractMigrationRecipe](./src/main/java/org/camunda/migration/rewrite/reci
 
 Patterns:
 
-* `TYPE IDENTIFIER = BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETERS);`
-* `IDENTIFIER = BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETERS);`
-* `BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETERS);`
+-   `TYPE IDENTIFIER = BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETERS);`
+-   `IDENTIFIER = BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETERS);`
+-   `BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETERS);`
 
 One set of rules is needed to transform these patterns. This specification can also be used to match constructors.
 
@@ -148,9 +148,9 @@ You can find examples for this simple replacement specification in the client mi
 
 Patterns:
 
-* `TYPE IDENTIFIER = BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETER).METHOD_INVOCATION(PARAMETER);`
-* `IDENTIFIER = BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETER).METHOD_INVOCATION(PARAMETER);`
-* `BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETER).METHOD_INVOCATION(PARAMETER);`
+-   `TYPE IDENTIFIER = BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETER).METHOD_INVOCATION(PARAMETER);`
+-   `IDENTIFIER = BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETER).METHOD_INVOCATION(PARAMETER);`
+-   `BASE_IDENTIFIER.METHOD_INVOCATION(PARAMETER).METHOD_INVOCATION(PARAMETER);`
 
 One set of rules is needed to transform these patterns.
 
@@ -183,7 +183,7 @@ You can find examples for this builder replacement specification in the client m
 
 Pattern:
 
-* `BASE_IDENTIFIER.METHOD_INVOCATION();`
+-   `BASE_IDENTIFIER.METHOD_INVOCATION();`
 
 This base identifier is a variable that was defined in an already transformed variable declaration. For example, imagine a `ProcessInstance` that is returned from a method invocation and saved in a variable called `instance`. Later in the code, `instance.getProcessInstanceKey()` might be called. The name of this base identifier is flexible. Under the hood, the `AbstractMigrationRecipe` tracks every transformed variable declaration. If there is a method invocation that matches the provided specification in the same block as the transformed variable declaration, the new type of this identifier can be set.
 
@@ -200,7 +200,7 @@ The matcher finds the method invocation to be transformed. The Java template pro
 
 Pattern:
 
-* `...METHOD_INVOCATION(PARAMETERS)...`
+-   `...METHOD_INVOCATION(PARAMETERS)...`
 
 This pattern can occur when dealing with chained method calls, where a simple renaming is sufficient.
 
@@ -309,7 +309,7 @@ declaration.
 ```java
     ReplacementUtils.RenameReplacementSpec(
         new MethodMatcher("org.camunda.bpm.engine.test.assertions.bpmn.ProcessInstanceAssert isWaitingAt(..)"),
-        "hasActiveElements"); 
+        "hasActiveElements");
 ```
 
 This specification matches the method `isWaitingAt` that is part of a method call chain. The method call is then
@@ -325,7 +325,6 @@ renamed, but the entire method call chain remains intact and is not replaced in 
 
 These preconditions evaluate to true if either one of the methods is used in a java file. In this case, if a signal is
 broadcast in Camunda 7, the recipe to migrate the signal broadcast methods and types is applied.
-
 
 ## Learnings
 
@@ -349,7 +348,7 @@ block is removed by visiting blocks to find unneeded blocks inside them. Like th
 one statement.
 
 When completing a visitor, if you return a statement without specifying `super.visitXXX`, the child nodes will not be
-visited by any other visitor. If you call `super.visitXXX`, all visitors can visit the child notes. This needs to be
+visited by any other visitor. If you call `super.visitXXX`, all visitors can visit the child nodes. This needs to be
 considered when replacing nodes that contain identifiers (parameters,...) that need to be visited, e.g., to change their
 type.
 
