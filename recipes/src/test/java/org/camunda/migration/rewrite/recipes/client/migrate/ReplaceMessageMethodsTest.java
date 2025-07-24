@@ -160,7 +160,7 @@ public class CorrelateMessagesTestClass {
 
     public void correlateMessageMethods(String messageName, String executionId, String businessKey, String tenantId, Map<String, Object> correlationKeys, Map<String, Object> variableMap) {
         // executionId was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -169,7 +169,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // executionId was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -178,7 +178,7 @@ public class CorrelateMessagesTestClass {
                 .send()
                 .join();
 
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -187,7 +187,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -196,7 +196,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // correlationKeys were removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -205,7 +205,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // correlationKeys were removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -216,7 +216,7 @@ public class CorrelateMessagesTestClass {
 
         // businessKey was removed
         // correlationKeys were removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -225,7 +225,7 @@ public class CorrelateMessagesTestClass {
                 .send()
                 .join();
 
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -234,7 +234,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -242,7 +242,7 @@ public class CorrelateMessagesTestClass {
                 .send()
                 .join();
 
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -251,7 +251,7 @@ public class CorrelateMessagesTestClass {
                 .send()
                 .join();
 
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -261,17 +261,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
-        camundaClient
-                .newCorrelateMessageCommand()
-                .messageName(messageName)
-                .correlationKey("add correlationKey here")
-                .tenantId(tenantId)
-                .send()
-                .join();
-
-        // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -281,7 +271,17 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
+        camundaClient
+                .newCorrelateMessageCommand()
+                .messageName(messageName)
+                .correlationKey("add correlationKey here")
+                .tenantId(tenantId)
+                .send()
+                .join();
+
+        // businessKey was removed
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -291,7 +291,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -300,17 +300,7 @@ public class CorrelateMessagesTestClass {
                 .send()
                 .join();
 
-        // messages can also be published asynchronously
-        camundaClient
-                .newCorrelateMessageCommand()
-                .messageName(messageName)
-                .correlationKey("add correlationKey here")
-                .variables(variableMap)
-                .tenantId(tenantId)
-                .send()
-                .join();
-
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -320,8 +310,7 @@ public class CorrelateMessagesTestClass {
                 .send()
                 .join();
 
-        // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -332,7 +321,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -343,7 +332,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -354,7 +343,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -365,7 +354,7 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)
@@ -376,7 +365,18 @@ public class CorrelateMessagesTestClass {
                 .join();
 
         // businessKey was removed
-        // messages can also be published asynchronously
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
+        camundaClient
+                .newCorrelateMessageCommand()
+                .messageName(messageName)
+                .correlationKey("add correlationKey here")
+                .variables(variableMap)
+                .tenantId(tenantId)
+                .send()
+                .join();
+
+        // businessKey was removed
+        // Hint: In Camunda 8 messages could also be correlated asynchronously
         camundaClient
                 .newCorrelateMessageCommand()
                 .messageName(messageName)

@@ -2,7 +2,6 @@ package org.camunda.migration.rewrite.recipes.client.migrate;
 
 import static org.openrewrite.java.Assertions.java;
 
-import org.camunda.migration.rewrite.recipes.client.MigrateStartProcessInstanceMethodsRecipe;
 import org.camunda.migration.rewrite.recipes.client.MigrateUserTaskMethodsRecipe;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RewriteTest;
