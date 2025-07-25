@@ -191,7 +191,7 @@ public class Testcases {
                 
         List<UserTask> userTasks = camundaClient
                 .newUserTaskSearchRequest()
-                .filter(userTaskFilter -> userTaskFilter.bpmnProcessId("sample-process-solution-process")
+                .filter(filter -> filter.bpmnProcessId("sample-process-solution-process")
                         .dueDate(dateTimeProperty -> dateTimeProperty.lt(someDate.toInstant().atOffset(ZoneOffset.UTC))))
                 .send()
                 .join()
