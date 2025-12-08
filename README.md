@@ -1,3 +1,18 @@
+> [!IMPORTANT]
+> **This project has moved!**
+>
+> The **Camunda 7 to 8 Code Conversion** tooling has been integrated into the official [camunda-7-to-8-migration-tooling](https://github.com/camunda/camunda-7-to-8-migration-tooling) repository.
+>
+> **What this means for you:**
+> - ✅ **Official support**: Now officially maintained by Camunda, ensuring long-term stability and updates.
+>
+> **Please visit the new repository for:**
+> - Latest source code and documentation
+> - Issue reporting and feature requests
+> - Contributing to the codebase
+>
+> This repository is now archived.
+
 # Camunda 7 to 8 Code Conversion
 
 As Camunda 8 is a complete rewrite of Camunda 7, you must adjust solutions developed for Camunda 7 to run on Camunda 8.
